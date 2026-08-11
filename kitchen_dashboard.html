@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Staff Terminal - Restaurant IMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --sidebar-bg: #1e293b;
+            --text-main: #334155;
+            --color-success: #10b981; /* Enough Stock */
+            --color-warning: #f59e0b; /* Alerting Threshold reached */
+            --color-danger: #ef4444;  /* Critical Shortage Alert */
+            --color-primary: #3b82f6; /* Log Usage button color */
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Streamlined Left Navigation Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--color-success);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu li.active a {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #334155;
+            padding-top: 1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Workspace Panels */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .top-bar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .workspace {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* Split-screen Layout for Inventory vs Active Warnings */
+        .kitchen-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .kitchen-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel-card {
+            background: #ffffff;
+            border-radius: var(--border-radius);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+
+        .panel-card h3 {
+            margin-bottom: 1.25rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Alert Warning Cards Column */
+        .alerts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alert-strip {
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid transparent;
+        }
+
+        .strip-danger { background-color: #fee2e2; color: var(--color-danger); border-left-color: var(--color-danger); }
+        .strip-warning { background-color: #fef3c7; color: var(--color-warning); border-left-color: var(--color-warning); }
+
+        /* Tables */
+        .table-container {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-success { background: #d1fae5; color: var(--color-success); }
+        .badge-warning { background: #fef3c7; color: var(--color-warning); }
+        .badge-danger { background: #fee2e2; color: var(--color-danger); }
+
+        /* Form Actions buttons */
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: var(--text-main); }
+
+        /* Dynamic Pop-up Interactive Dialog Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-card {
+            background: white; padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 100%; max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .modal-card h4 { margin-bottom: 1rem; color: var(--sidebar-bg); }
+        .form-control {
+            width: 100%; padding: 10px; margin: 12px 0 20px 0;
+            border: 1px solid #cbd5e1; border-radius: var(--border-radius); outline: none;
+        }
+
+        /* Search Input Bar Styling */
+.search-box {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Make Table and Alerts scrollable with fixed max-height */
+.table-container {
+    border-radius: var(--border-radius);
+    overflow-y: auto;
+    max-height: 400px; /* Scrollable height for table */
+    border: 1px solid #e2e8f0;
+}
+
+/* Sticky header so it stays visible while scrolling */
+table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #f8f9fa;
+}
+
+.alerts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 450px; /* Scrollable height for alerts */
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="brand"><i class="fas fa-fire-burner"></i> Kitchen Display</div>
+            <ul class="sidebar-menu">
+                <li class="active">
+                    <a href="#"><i class="fas fa-boxes"></i> Inventory & Alerts</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-badge">
+                <i class="fas fa-hat-chef" style="font-size: 1.5rem; color: #94a3b8;"></i>
+                <div>
+                    <p style="font-weight: 600;">Chef Line 1</p>
+                    <p style="font-size: 0.75rem; color: #94a3b8;">Kitchen Staff Tier</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h2>Kitchen Material Logistics Terminal</h2>
+            <button class="btn btn-outline" onclick="handleKitchenLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="workspace">
+            <!-- WITH THIS: -->
+<div class="kitchen-grid">
+
+    <!-- Matrix Panel -->
+    <div class="panel-card">
+        <h3><i class="fas fa-list-check"></i> Storage Stock Availability Matrix</h3>
+        
+        <!-- Live Search Box -->
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="kitchenSearchInput" class="search-input" placeholder="Search ingredient name...">
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ingredient Name</th>
+                        <th>Available Balance</th>
+                        <th>Unit</th>
+                        <th>Status Level</th>
+                        <th style="text-align: right;">Action Log</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                    <tr><td colspan="5">Loading inventory...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Alerts Panel -->
+    <div class="panel-card">
+        <h3><i class="fas fa-triangle-exclamation" style="color: var(--color-warning)"></i> System Generated Alerts</h3>
+        <div class="alerts-container" id="alertsWrapper">
+            <p style="color:#94a3b8; font-style:italic;">Loading alerts...</p>
+        </div>
+    </div>
+
+</div>
+        </div>
+    </div>
+
+    <!-- WITH THIS: -->
+<div class="modal" id="usageModal">
+    <div class="modal-card">
+        <h4 id="modalItemTitle">Log Ingredient Deduction</h4>
+        <div id="modalAvailableBadge" style="margin-top: 6px; margin-bottom: 12px; font-size: 0.9rem; font-weight: 600; color: var(--color-primary);">
+            Available Stock: <span id="modalStockValue">0</span> <span id="modalStockUnit"></span>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 8px;">Specify the physical quantity volume taken out of storage inventory maps.</p>
+        <input type="number" step="0.1" min="0" class="form-control" id="usageAmount" placeholder="Ex: 2.5" style="margin-top: 4px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn btn-outline" onclick="closeUsageModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="confirmStockDeduction()">Confirm Takeout</button>
+        </div>
+    </div>
+</div>
+
+    <script type="module">
+    import { onAuthStateChanged, getAuth, signOut }
+        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { collection, onSnapshot, doc, updateDoc, increment }
+        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const KITCHEN_UID = 'zT0GE0lBlqUM5Sp2jN9mtyvhg3o1';
+
+    let db;
+    try {
+        ({ db } = await import('./firebase-config.js'));
+    } catch (err) {
+        console.error('Firebase failed to initialize:', err);
+        alert('Could not connect to the database.');
+    }
+
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user || user.uid !== KITCHEN_UID) {
+            window.location.href = 'index.html';
+            return;
+        }
+        listenInventory();
+    });
+
+    window.handleKitchenLogout = async function () {
+        await signOut(auth);
+        window.location.href = 'index.html';
+    };
+
+    let activeItemId = '';
+    let globalRawInventory = [];
+
+    
+
+    function listenInventory() {
+    onSnapshot(collection(db, 'inventory'), (snapshot) => {
+        globalRawInventory = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderFilteredData();
+    }, (error) => {
+        console.error('Inventory listener error:', error);
+    });
+}
+
+// Function to filter items based on search input query
+function renderFilteredData() {
+    const searchInput = document.getElementById('kitchenSearchInput');
+    const queryTerm = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+    const filteredItems = globalRawInventory.filter(item => {
+        const name = (item.ingredient_name || '').toLowerCase();
+        return name.includes(queryTerm);
+    });
+
+    populateInventoryTable(filteredItems);
+    populateAlerts(filteredItems);
+}
+
+// Search input listener
+document.getElementById('kitchenSearchInput')?.addEventListener('input', () => {
+    renderFilteredData();
+});
+
+function getStatus(current, reorder) {
+    if (current <= 2) return { label: 'Critical Risk', cls: 'badge-danger' };
+    if (current < reorder) return { label: 'Low Stock', cls: 'badge-warning' };
+    return { label: 'Enough Stock', cls: 'badge-success' };
+}
+
+    function populateInventoryTable(items) {
+    const tbody = document.getElementById('inventoryBody');
+    window._kitchenInventoryCache = items;
+
+    if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding: 20px;">No matching ingredients found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = items.map(item => {
+        const status = getStatus(item.current_balance, item.reorder_level);
+        return `
+        <tr>
+            <td><strong>${item.ingredient_name || '—'}</strong></td>
+            <td style="font-weight:600;">${item.current_balance}</td>
+            <td>${item.stock_unit || '—'}</td>
+            <td><span class="badge ${status.cls}">${status.label}</span></td>
+            <td style="text-align:right;">
+                <button class="btn btn-primary" onclick="openUsageModal('${item.id}')">
+                    <i class="fas fa-minus-circle"></i> Log Usage
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function populateAlerts(items) {
+    const wrapper = document.getElementById('alertsWrapper');
+    const alerts = items.filter(i => i.current_balance < i.reorder_level);
+
+    if (alerts.length === 0) {
+        wrapper.innerHTML = '<p style="color:#94a3b8; font-style:italic; padding: 10px;">✅ No active stock alerts for matching items.</p>';
+        return;
+    }
+
+    wrapper.innerHTML = alerts.map(item => {
+        const critical = item.current_balance <= 2;
+        return `
+        <div class="alert-strip ${critical ? 'strip-danger' : 'strip-warning'}">
+            <i class="fas ${critical ? 'fa-radiation' : 'fa-exclamation-circle'}"></i>
+            <div>${critical ? 'CRITICAL: ' : ''}${item.ingredient_name} is ${critical ? 'severely depleted' : 'running low'}
+                 (${item.current_balance} ${item.stock_unit || ''} left). Reorder level: ${item.reorder_level}.</div>
+        </div>`;
+    }).join('');
+}
+
+    // WITH THIS:
+window.openUsageModal = function (itemId) {
+    // Look up the selected item from global inventory data
+    const item = (globalRawInventory || window._kitchenInventoryCache || []).find(i => i.id === itemId);
+    if (!item) return;
+    
+    activeItemId = itemId;
+    document.getElementById('modalItemTitle').textContent = `Log Usage: ${item.ingredient_name || ''}`;
+    
+    // Display available balance and unit in modal
+    document.getElementById('modalStockValue').textContent = item.current_balance ?? 0;
+    document.getElementById('modalStockUnit').textContent = item.stock_unit || '';
+    
+    // Max constraint so HTML input doesn't allow values higher than balance
+    const inputField = document.getElementById('usageAmount');
+    inputField.value = '';
+    inputField.max = item.current_balance;
+
+    document.getElementById('usageModal').style.display = 'flex';
+};
+
+    window.closeUsageModal = function () {
+        document.getElementById('usageModal').style.display = 'none';
+    };
+
+    window.confirmStockDeduction = async function () {
+        const deductVol = parseFloat(document.getElementById('usageAmount').value);
+        if (!deductVol || deductVol <= 0) {
+            alert('Please input a valid quantity.');
+            return;
+        }
+        const item = (window._kitchenInventoryCache || []).find(i => i.id === activeItemId);
+        if (!item) return;
+
+        if (deductVol > item.current_balance) {
+            alert('Requested quantity exceeds current stock balance.');
+            return;
+        }
+
+        try {
+            await updateDoc(doc(db, 'inventory', activeItemId), {
+                current_balance: increment(-deductVol)
+            });
+            closeUsageModal();
+        } catch (err) {
+            console.error('Failed to log usage:', err);
+            alert('Failed to update stock.');
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Manager Workspace - Restaurant IMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="manager_dashboard.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+
+<body>
+
+    <!-- ── SIDEBAR ── -->
+    <div class="sidebar">
+        <div>
+            <div class="brand"><i class="fas fa-utensils"></i> Restaurant IMS</div>
+            <ul class="sidebar-menu">
+                <li id="nav-dash" class="active">
+                    <a href="#" onclick="switchTab('dashboardPanel', 'nav-dash')">
+                        <i class="fas fa-chart-pie"></i> Dashboard Overview
+                    </a>
+                </li>
+                <li id="nav-inv">
+                    <a href="#" onclick="switchTab('inventoryPanel', 'nav-inv')">
+                        <i class="fas fa-boxes"></i> Inventory Stock
+                    </a>
+                </li>
+                <li id="nav-sup">
+                    <a href="#" onclick="switchTab('suppliersPanel', 'nav-sup')">
+                        <i class="fas fa-handshake"></i> Suppliers Directory
+                    </a>
+                </li>
+                <li id="nav-po">
+                    <a href="#" onclick="switchTab('ordersPanel', 'nav-po')">
+                        <i class="fas fa-file-invoice"></i> Purchase Orders
+                    </a>
+                </li>
+                <li id="nav-del">
+                    <a href="#" onclick="switchTab('deliveriesPanel', 'nav-del')">
+                        <i class="fas fa-truck"></i> Delivery Logs
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-badge">
+                <i class="fas fa-user-circle icon-muted"></i>
+                <div>
+                    <p class="fw-600">Restaurant Manager</p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="main-content">
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h2 id="viewHeading">Dashboard Overview</h2>
+            <button class="btn btn-outline btn-sm" onclick="handleManagerLogout()" title="Log out">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <!-- ══ PANEL 1: DASHBOARD ══ -->
+        <div id="dashboardPanel" class="workspace active-view">
+
+            <div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-info">
+            <h4>Total Items</h4>
+            <p id="kpi-total-items">—</p>
+        </div>
+        <div class="kpi-icon icon-blue">
+            <i class="fas fa-cubes"></i>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h4>Low Stock Items</h4>
+            <p id="kpi-low-stock" class="icon-danger">—</p>
+        </div>
+        <div class="kpi-icon icon-red">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h4>Pending POs</h4>
+            <p id="kpi-pending-po">—</p>
+        </div>
+        <div class="kpi-icon icon-green">
+            <i class="fas fa-shipping-fast"></i>
+        </div>
+    </div>
+    
+</div>
+
+            <div class="dashboard-split">
+
+                <div class="panel-card">
+                    <h3>
+                        <i class="fas fa-bell icon-danger"></i>
+                        Active Low Stock Alerts
+                    </h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ingredient</th>
+                                    <th>Current Count</th>
+                                    <th>Reorder Threshold</th>
+                                </tr>
+                            </thead>
+                            <tbody id="low-stock-tbody">
+                                <tr class="loading-row">
+                                    <td colspan="3">Loading alerts...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <h3><i class="fas fa-history"></i> Recent Activities Log</h3>
+                    <ul class="activity-feed" id="activity-feed">
+                        <li class="text-muted italic-text">Loading activities...</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            
+
+        </div><!-- end dashboardPanel -->
+
+        <!-- ══ PANEL 2: INVENTORY STOCK ══ -->
+        <div id="inventoryPanel" class="workspace">
+            <div class="section-header">
+                <h3>Centralized Material Inventory Stock Sheet</h3>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingredient Name</th>
+                            <th>Current Balance</th>
+                            <th>Stock Unit</th>
+                            <th>Status Flag</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-tbody">
+                        <tr class="loading-row">
+                            <td colspan="5">Loading inventory...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- end inventoryPanel -->
+
+        <!-- ══ PANEL 3: SUPPLIERS DIRECTORY ══ -->
+        <div id="suppliersPanel" class="workspace">
+            <div class="section-header-compact">
+                <h3>Registered Vendor Profiles Directory</h3>
+                <button class="btn btn-success btn-sm" onclick="openSupplierModal()" title="Add a new supplier">
+                    <i class="fas fa-plus"></i> Add Supplier
+                </button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Supplier Enterprise Name</th>
+                            <th>Contact Phone</th>
+                            <th>Email Coordinates Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliers-tbody">
+                        <tr class="loading-row">
+                            <td colspan="4">Loading suppliers...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- end suppliersPanel -->
+
+        <!-- ══ PANEL 4: PURCHASE ORDERS FORM ══ -->
+        <div id="ordersPanel" class="workspace">
+    <h3 class="mb-1">Generate Purchase Order Requisition</h3>
+    <div class="panel-card">
+        <div class="form-group">
+            <label for="po-supplier">Target Supplier Entity</label>
+            <select id="po-supplier" class="form-control" title="Select supplier">
+                <option value="" disabled selected>Loading suppliers...</option>
+            </select>
+        </div>
+
+        <div class="po-label-row">
+    <label class="po-section-label">Select Ingredients &amp; Quantities</label>
+    <div id="po-selected-chips" class="po-chips-bar">
+        <span class="chips-empty">No items selected yet.</span>
+    </div>
+</div>
+
+        <input id="po-ingredient-search" type="text" class="form-control po-search-input"
+               placeholder="Search ingredients..." oninput="filterPOIngredients()" title="Search ingredients">
+
+        <div class="table-container po-items-scroll-container">
+            <table>
+                <thead>
+                    <tr><th></th><th>Ingredient</th><th>Unit</th><th>Quantity</th></tr>
+                </thead>
+                <tbody id="po-items-table-body">
+                    <tr><td colspan="4">Loading ingredients...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="action-buttons-row">
+            <button class="btn btn-success" onclick="submitPurchaseOrder()">
+                <i class="fas fa-paper-plane"></i> Submit Purchase Order
+            </button>
+        </div>
+    </div>
+</div><!-- end ordersPanel -->
+
+        <!-- ══ PANEL 5: DELIVERY LOGS ══ -->
+        <div id="deliveriesPanel" class="workspace">
+            <h3 class="mb-1">Logistics Delivery & Shipping Logs Manifest</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order Reference ID</th>
+                            <th>Logistics Route Manifest / Date</th>
+                            <th>Action Updates</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deliveries-tbody">
+                        <tr class="loading-row">
+                            <td colspan="3">Loading deliveries...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- end deliveriesPanel -->
+
+    </div><!-- end main-content -->
+
+
+    <!-- ══ DELIVERY VERIFICATION MODAL ══ -->
+    <div id="deliveryModal">
+        <div class="modal-box">
+
+            <h3 id="deliveryModalTitle" class="mb-05">
+                <i class="fas fa-boxes"></i>
+                Verify Delivery Manifest
+            </h3>
+            <p class="modal-note">
+                Verify or adjust actual received quantities before updating database stock.
+            </p>
+
+            <table class="delivery-summary-table">
+    <thead>
+        <tr>
+            <th>Ingredient Name</th>
+            <th class="col-center">Ordered</th>
+            <th class="col-center">Shipped</th>
+            <th class="col-right">Delivered</th>
+            <th class="col-center">Unit Price</th>
+            <th class="col-center">Line Total</th>
+            
+        </tr>
+    </thead>
+    <tbody id="delivery-modal-tbody"></tbody>
+</table>
+<div class="form-group" style="text-align:right; margin-top:1rem;">
+    <label style="font-weight:700;">Grand Total: <span id="delivery-grand-total">৳ 0.00</span></label>
+</div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeDeliveryModal()" title="Cancel">Cancel</button>
+                <button class="btn btn-success"
+                        onclick="confirmDeliveryCheckIn(document.getElementById('deliveryModal').dataset.orderNum)"
+                        title="Confirm and update stock">
+                    <i class="fas fa-check"></i> Confirm & Update Stock
+                </button>
+            </div>
+
+        </div>
+    </div><!-- end deliveryModal -->
+
+    <!-- ══ ADD / EDIT INGREDIENT MODAL ══ -->
+    <div id="ingredientModal">
+        <div class="modal-box">
+            <h3 id="ingredientModalTitle" class="mb-1">
+                <i class="fas fa-carrot"></i>
+                Add New Ingredient
+            </h3>
+
+            <div class="form-group">
+                <label for="ingredient-name-input">Ingredient Name</label>
+                <input id="ingredient-name-input" type="text" class="form-control"
+                       placeholder="e.g. Basmati Rice" title="Ingredient name">
+            </div>
+
+            <div class="form-group">
+                <label for="ingredient-unit-input">Stock Unit</label>
+                <input id="ingredient-unit-input" type="text" class="form-control"
+                       placeholder="e.g. kg, liters" title="Unit of measurement">
+            </div>
+
+            <div class="form-group">
+                <label for="ingredient-reorder-input">Reorder Threshold (low-stock alert level)</label>
+                <input id="ingredient-reorder-input" type="number" class="form-control"
+                       min="0" value="10" title="Reorder threshold">
+            </div>
+
+            <div class="form-group hidden-field" id="ingredient-balance-group">
+                <label for="ingredient-balance-input">Current Balance</label>
+                <input id="ingredient-balance-input" type="number" class="form-control" min="0"
+                       title="Current stock balance">
+            </div>
+
+            <p id="ingredient-zero-note" class="zero-note">
+                New ingredients start at 0 stock — quantity arrives once a purchase order is delivered.
+            </p>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeIngredientModal()" title="Cancel">Cancel</button>
+                <button class="btn btn-success" onclick="saveIngredientModal()" title="Save ingredient">
+                    <i class="fas fa-check"></i> <span id="ingredient-save-btn-text">Add Ingredient</span>
+                </button>
+            </div>
+        </div>
+    </div><!-- end ingredientModal -->
+
+    <!-- ══ ADD SUPPLIER MODAL ══ -->
+    <div id="supplierModal">
+        <div class="modal-box">
+            <h3 id="supplierModalTitle" class="mb-1">
+                <i class="fas fa-handshake"></i>
+                Add New Supplier
+            </h3>
+
+            <div class="form-group">
+                <label for="supplier-name-input">Company / Supplier Name</label>
+                <input id="supplier-name-input" type="text" class="form-control"
+                       placeholder="e.g. Dhaka Fresh Produce Co." title="Supplier company name">
+            </div>
+
+            <div class="form-group">
+                <label for="supplier-phone-input">Contact Phone</label>
+                <input id="supplier-phone-input" type="text" class="form-control"
+                       value="+880" maxlength="14"
+                       oninput="enforcePhoneFormat(this)"
+                       onkeydown="preventPrefixDeletion(event, this)"
+                       title="Contact phone number">
+            </div>
+
+            <div id="supplier-login-fields">
+                <div class="form-group">
+                    <label for="supplier-email-input">Login Email (for supplier portal access)</label>
+                    <input id="supplier-email-input" type="email" class="form-control"
+                           placeholder="e.g. orders@dhakafresh.com" title="Login email for supplier portal">
+                </div>
+            </div>
+
+            <p id="supplier-edit-note" class="zero-note hidden-field">
+                Login email and password can't be changed here — use the key icon (<i class="fas fa-key"></i>) to send a password reset instead.
+            </p>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeSupplierModal()" title="Cancel">Cancel</button>
+                <button class="btn btn-success" onclick="saveSupplierModal()" title="Save supplier">
+                    <i class="fas fa-check"></i> <span id="supplier-save-btn-text">Create Supplier Account</span>
+                </button>
+            </div>
+        </div>
+    </div><!-- end supplierModal -->
+
+    <!-- ══ PAY SUPPLIER MODAL ══ -->
+<div id="paymentModal">
+    <div class="modal-box">
+        <h3 class="mb-1"><i class="fas fa-money-bill-wave"></i> Pay Supplier</h3>
+        <p class="modal-note" id="payment-order-label"></p>
+        <div class="form-group">
+            <label>Amount Due</label>
+            <input id="payment-amount-display" type="text" class="form-control" disabled>
+        </div>
+
+        <div class="form-group">
+            <label style="display:block; font-weight:600; margin-bottom:0.5rem;">Choose Payment Method</label>
+            <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer;">
+                <input type="radio" name="payment-method" value="online" onchange="togglePaymentMethodUI()">
+                <i class="fas fa-credit-card"></i> Pay Online
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="radio" name="payment-method" value="cash" onchange="togglePaymentMethodUI()">
+                <i class="fas fa-money-bill-wave"></i> Cash
+            </label>
+        </div>
+
+        <p id="payment-cash-note" class="modal-note hidden-field">
+            The order will be marked "Awaiting Cash Confirmation" until the supplier confirms they've received the cash on their end.
+        </p>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closePaymentModal()">Cancel</button>
+            <button class="btn btn-success" onclick="makePayment()">
+                <i class="fas fa-check"></i> Make Payment
+            </button>
+        </div>
+    </div>
+</div><!-- end paymentModal -->
+
+    <!-- ══ UI NAVIGATION — no Firebase dependency, always works ══ -->
+    <script>
+        function switchTab(panelId, menuId) {
+            document.querySelectorAll('.workspace').forEach(v => v.classList.remove('active-view'));
+            document.getElementById(panelId).classList.add('active-view');
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            document.getElementById(menuId).classList.add('active');
+            document.getElementById('viewHeading').textContent =
+                document.getElementById(menuId).innerText.trim();
+
+            sessionStorage.setItem('activeManagerTab', JSON.stringify({ panelId, menuId }));
+
+            const tabsNeedingOrphanCheck = ['suppliersPanel', 'ordersPanel'];
+            if (tabsNeedingOrphanCheck.includes(panelId) && window._suppliersCache && window.checkForOrphanedSuppliers) {
+                window.checkForOrphanedSuppliers(window._suppliersCache);
+            }
+        }
+        window.switchTab = switchTab;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = sessionStorage.getItem('activeManagerTab');
+            if (saved) {
+                const { panelId, menuId } = JSON.parse(saved);
+                if (document.getElementById(panelId) && document.getElementById(menuId)) {
+                    switchTab(panelId, menuId);
+                }
+            }
+        });
+    </script>
+
+    <!-- ══ AUTH GUARD — redirect to login if not authenticated as the manager ══ -->
+    <script type="module">
+        import { onAuthStateChanged, getAuth } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+        const MANAGER_UID = '1lucTi9XLecpPBZO8hXSvV3nRVM2';
+
+        const { db } = await import('./firebase-config.js');
+        const auth = getAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.uid !== MANAGER_UID) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        window.handleManagerLogout = async function() {
+            const { signOut } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+            sessionStorage.removeItem('activeManagerTab');
+            await signOut(auth);
+            window.location.href = 'index.html';
+        };
+
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
+    <!-- ══ FIREBASE MODULE ══ -->
+    <script type="module" src="manager.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner & Admin Executive Terminal - Restaurant IMS</title>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --sidebar-bg: #0f172a; /* Slate Black for administrative/executive tone */
+            --text-main: #334155;
+            --color-success: #10b981; /* Paid / Secure Access */
+            --color-warning: #f59e0b; /* Processing / Pending Invoices */
+            --color-danger: #ef4444;  /* Unpaid Balance / Restricted Account */
+            --color-primary: #3b82f6; /* Action triggers / Payment buttons */
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Executive Left Navigation Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f8fafc;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu li.active a, .sidebar-menu li a:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            padding-top: 1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Workspace Panels Layout */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .top-bar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .workspace {
+            padding: 2rem;
+            flex: 1;
+            display: none;
+        }
+
+        .workspace.active-view {
+            display: block;
+        }
+
+        /* Macro Metric Stat Cards Row */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-info h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-info p {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--sidebar-bg);
+        }
+
+        .metric-card i {
+            font-size: 2rem;
+            opacity: 0.25;
+            color: var(--color-primary);
+        }
+
+        /* Data Tables Container Components */
+        .panel-card {
+            background: #ffffff;
+            border-radius: var(--border-radius);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-container {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Financial Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-success { background: #d1fae5; color: var(--color-success); }
+        .badge-warning { background: #fef3c7; color: var(--color-warning); }
+        .badge-danger { background: #fee2e2; color: var(--color-danger); }
+
+        /* Actions buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-success { background-color: var(--color-success); color: white; }
+        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: var(--text-main); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        /* Report Downloader Card Grid */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .report-card {
+            background: white; border: 1px solid #e2e8f0;
+            padding: 1.5rem; border-radius: var(--border-radius);
+            display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;
+        }
+
+        /* Mock Chart Canvas Frame Layout */
+        .chart-placeholder {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Unified Administration Sidebar Panel Navigation Frame -->
+    <div class="sidebar">
+        <div>
+            <div class="brand"><i class="fas fa-user-shield"></i> Owner Terminal</div>
+            <ul class="sidebar-menu">
+                <li id="nav-dash" class="active"><a href="#" onclick="switchWorkspace('dashView', 'nav-dash')"><i class="fas fa-chart-line"></i> Dashboard Overview</a></li>
+                <li id="nav-pay"><a href="#" onclick="switchWorkspace('paymentsView', 'nav-pay')"><i class="fas fa-credit-card"></i> Supplier Payments</a></li>
+                <li id="nav-rep"><a href="#" onclick="switchWorkspace('reportsView', 'nav-rep')"><i class="fas fa-file-invoice-dollar"></i> Reports & Analytics</a></li>
+                <li id="nav-rbac"><a href="#" onclick="switchWorkspace('rbacView', 'nav-rbac')"><i class="fas fa-users-gear"></i> User Access (RBAC)</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-badge">
+                <i class="fas fa-crown" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                <div>
+                    <p style="font-weight: 600;">Business Owner</p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Working Panels Area Container -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 id="viewHeaderTitle">Dashboard Overview</h2>
+            <button class="btn btn-outline btn-sm" onclick="handleOwnerLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <!-- PANEL 1: GENERAL EXECUTIVE MACRO DASHBOARD -->
+        <div id="dashView" class="workspace active-view">
+            <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-info"><h4>Total Store Spendings</h4><p id="kpi-total-spend">৳0.00</p></div><i class="fas fa-wallet"></i></div>
+    <div class="metric-card"><div class="metric-info"><h4>Outstanding Owed Liabilities</h4><p id="kpi-outstanding" style="color: var(--color-danger)">৳0.00</p></div><i class="fas fa-hand-holding-dollar"></i></div>
+    <div class="metric-card"><div class="metric-info"><h4>Procured Invoices Settled</h4><p id="kpi-settled">0</p></div><i class="fas fa-file-shield"></i></div>
+</div>
+
+            <div class="panel-card">
+                <h3><i class="fas fa-shield-halved"></i> Operational Security Overview</h3>
+                <p style="font-size: 0.95rem; color: #64748b; margin-top: 0.5rem;">All database modules are reporting operational compliance. Use the navigation links to handle structural asset releases, balance ledgers, and role parameters.</p>
+            </div>
+        </div>
+
+        <!-- PANEL 2: SUPPLIER LIABILITY PAYMENTS LEDGER -->
+        <div id="paymentsView" class="workspace">
+            <div style="margin-bottom: 1.5rem;">
+                <h3>Supplier Ledger Accounts & Open Invoices</h3>
+                <p style="color:#64748b; font-size: 0.9rem;">Review outstanding balances received for checked-in supplier fulfillment manifests.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Invoice Ref</th>
+                            <th>Supplier Enterprise</th>
+                            <th>Fulfillment Date</th>
+                            <th>Total Owed Balance</th>
+                            <th>Status Flag</th>
+                            <th style="text-align: right;">Action Ledger</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payments-tbody">
+    <tr><td colspan="6">Loading invoices...</td></tr>
+</tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PANEL 3: EXECUTIVE REPORTS & ANALYTICS WIDGETS -->
+        <div id="reportsView" class="workspace">
+            <h3 style="margin-bottom: 1.5rem;">Financial Analytics & Data Export Controls</h3>
+
+            <div class="report-grid">
+                <div class="report-card">
+                    <div>
+                        <h4><i class="fas fa-file-pdf" style="color: red;"></i> Monthly Expense Ledger Report</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Aggregates ingredient purchasing costs, freight line item payouts, and open accounts records.</p>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="alert('Compiling transactional archives into PDF export stream...')"><i class="fas fa-download"></i> Export Data (PDF)</button>
+                </div>
+                <div class="report-card">
+                    <div>
+                        <h4><i class="fas fa-file-excel" style="color: green;"></i> Supplier Performance Matrix</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Tracks fulfillment accuracies, transit latency logs, and rate compliance matrices.</p>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="alert('Formatting relational supplier analytics arrays to CSV spreadsheet...')"><i class="fas fa-download"></i> Export Data (CSV)</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Analytics Chart Container Placeholder -->
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-column" style="font-size: 3.5rem; margin-bottom: 1rem; display:block; color:#94a3b8;"></i>
+                <h3>(Bar Chart Component Area)</h3>
+                <p style="font-size: 0.9rem; margin-top: 6px;">Supabase database query loop parsing store operating data into live charts.</p>
+            </div>
+        </div>
+
+        <!-- PANEL 4: TECHNICAL USER ACCESS CONTROLS (RBAC ENGINES) -->
+        <div id="rbacView" class="workspace">
+            <div style="margin-bottom: 1.5rem;">
+                <h3>Role-Based Access Control System Settings (RBAC)</h3>
+                <p style="color:#64748b; font-size: 0.9rem;">Manage staff authorizations, security groups, and cloud accessibility clearance levels.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Full Name</th>
+                            <th>System Email Account Address</th>
+                            <th>Security Access Group Identity</th>
+                            <th style="text-align: right;">Authorization Control</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rbac-tbody">
+    <tr><td colspan="4">Loading users...</td></tr>
+</tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Administrative Interactivity Automation Scripts -->
+    <script type="module">
+    import { onAuthStateChanged, getAuth, signOut }
+        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { collection, onSnapshot, doc, updateDoc, serverTimestamp }
+        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const OWNER_UID   = 'NvaISfjul6Y0mTNLBmSPZCGfHcB2';
+    const MANAGER_UID = '1lucTi9XLecpPBZO8hXSvV3nRVM2';
+
+    let db;
+    try {
+        ({ db } = await import('./firebase-config.js'));
+    } catch (err) {
+        console.error('Firebase failed to initialize:', err);
+        alert('Could not connect to the database.');
+    }
+
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user || user.uid !== OWNER_UID) {
+            window.location.href = 'index.html';
+            return;
+        }
+        listenDeliveries();
+        listenSuppliersAndUsers();
+    });
+
+    window.handleOwnerLogout = async function () {
+        await signOut(auth);
+        window.location.href = 'index.html';
+    };
+
+    function switchWorkspace(panelId, menuId) {
+        document.querySelectorAll('.workspace').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(panelId).classList.add('active-view');
+        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+        document.getElementById(menuId).classList.add('active');
+        document.getElementById('viewHeaderTitle').textContent =
+            document.getElementById(menuId).innerText.trim();
+    }
+    window.switchWorkspace = switchWorkspace;
+
+    // ── Dashboard metrics + Payments ledger, sourced from 'deliveries' ──
+    function listenDeliveries() {
+        onSnapshot(collection(db, 'deliveries'), (snapshot) => {
+            const deliveries = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            const grouped = {};
+            deliveries.forEach(d => {
+                const key = d.order_id || d.id;
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push(d);
+            });
+            window._ownerDeliveriesGrouped = grouped;
+
+            let totalSpend = 0, outstanding = 0, settledCount = 0;
+            const orderSummaries = [];
+
+            Object.entries(grouped).forEach(([orderId, items]) => {
+                const allDelivered = items.every(i =>
+                    i.status === 'Delivered' || i.status === 'Partial Delivery' || i.status === 'Not Delivered');
+                const total = items.reduce((sum, i) => sum + (i.total_amount || 0), 0);
+                const isPaid = items.some(i => i.payment_status === 'Paid');
+                const pendingCash = items.some(i => i.payment_status === 'Pending Cash Confirmation');
+
+                if (isPaid) {
+                    totalSpend += total;
+                    settledCount++;
+                } else if (allDelivered && total > 0) {
+                    outstanding += total;
+                }
+
+                if (allDelivered && total > 0) {
+                    orderSummaries.push({
+                        orderId, items, total,
+                        supplierName: items[0]?.supplier_name || '—',
+                        date: items[0]?.scheduled_date?.toDate?.() || null,
+                        isPaid, pendingCash
+                    });
+                }
+            });
+
+            document.getElementById('kpi-total-spend').textContent  = `৳${totalSpend.toFixed(2)}`;
+            document.getElementById('kpi-outstanding').textContent  = `৳${outstanding.toFixed(2)}`;
+            document.getElementById('kpi-settled').textContent      = settledCount;
+
+            populatePaymentsTable(orderSummaries);
+        });
+    }
+
+    function populatePaymentsTable(orders) {
+        const tbody = document.getElementById('payments-tbody');
+        if (!tbody) return;
+
+        if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6">No fulfilled orders yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = orders.map(o => {
+            let badge, actionBtn;
+            if (o.isPaid) {
+                badge = '<span class="badge badge-success">Paid</span>';
+                actionBtn = '<button class="btn btn-sm btn-outline" disabled><i class="fas fa-check"></i> Settled</button>';
+            } else if (o.pendingCash) {
+                badge = '<span class="badge badge-warning">Awaiting Cash Confirmation</span>';
+                actionBtn = '<button class="btn btn-sm btn-outline" disabled><i class="fas fa-hourglass-half"></i> Pending</button>';
+            } else {
+                badge = '<span class="badge badge-danger">Unpaid Invoice</span>';
+                actionBtn = `<button class="btn btn-sm btn-primary" disabled title="Payments are processed from the Manager dashboard">
+                                <i class="fas fa-credit-card"></i> View Only</button>`;
+            }
+
+            const dateStr = o.date ? o.date.toLocaleDateString() : '—';
+
+            return `
+            <tr>
+                <td><strong>${o.orderId}</strong></td>
+                <td>${o.supplierName}</td>
+                <td>${dateStr}</td>
+                <td><strong>৳${o.total.toFixed(2)}</strong></td>
+                <td>${badge}</td>
+                <td style="text-align:right;">${actionBtn}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── RBAC — read-only view of manager + suppliers ──
+    function listenSuppliersAndUsers() {
+        onSnapshot(collection(db, 'suppliers'), (snapshot) => {
+            const suppliers = snapshot.docs.map(d => d.data());
+            populateRbacTable(suppliers);
+        });
+    }
+
+    function populateRbacTable(suppliers) {
+        const tbody = document.getElementById('rbac-tbody');
+        if (!tbody) return;
+
+        const rows = [
+            `<tr>
+                <td><strong>Restaurant Manager</strong></td>
+                <td>—</td>
+                <td><span class="badge badge-warning">Manager</span></td>
+                <td style="text-align:right;"><span class="text-muted small-text">Fixed role</span></td>
+            </tr>`,
+            ...suppliers.map(s => `
+            <tr>
+                <td><strong>${s.name || '—'}</strong></td>
+                <td>${s.email || '—'}</td>
+                <td><span class="badge badge-success">Supplier</span></td>
+                <td style="text-align:right;"><span class="text-muted small-text">Managed via Manager → Suppliers</span></td>
+            </tr>`)
+        ];
+
+        tbody.innerHTML = rows.join('');
+    }
+</script>
+</body>
+</html>

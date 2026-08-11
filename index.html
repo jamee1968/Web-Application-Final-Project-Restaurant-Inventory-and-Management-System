@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Restaurant Inventory Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --color-primary: #3b82f6;
+            --color-primary-hover: #2563eb;
+            --border-color: #cbd5e1;
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            color: var(--text-main);
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem 2rem;
+            border-radius: calc(var(--border-radius) * 1.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-header i {
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .brand-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .brand-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #475569;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Target ONLY the left-side icon directly inside input-wrapper */
+.input-wrapper > i {
+    position: absolute;
+    left: 14px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Password Toggle Button */
+.toggle-password-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: color 0.2s ease;
+}
+
+.toggle-password-btn i {
+    position: static;
+    pointer-events: auto;
+}
+
+.toggle-password-btn:hover {
+    color: var(--text-main);
+}
+
+.form-control.has-toggle {
+    padding-right: 42px;
+}
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            outline: none;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .utilities {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .forgot-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--color-primary);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #f1f5f9;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        #loginError {
+            display: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 10px 14px;
+            border-radius: var(--border-radius);
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Password Toggle Button */
+.toggle-password-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+    color: var(--text-main);
+}
+
+/* Add padding to input so text doesn't overlap eye icon */
+.form-control.has-toggle {
+    padding-right: 40px;
+}
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="brand-header">
+            <i class="fas fa-utensils"></i>
+            <h1>Welcome Back</h1>
+            <p>Log in to access your inventory workspace</p>
+        </div>
+
+        <div id="loginError"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="userEmail">Email</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="userEmail" class="form-control" placeholder="name@restaurant.com" required>
+                </div>
+            </div>
+
+            <!-- WITH THIS: -->
+<div class="form-group">
+    <label for="userPassword">Password</label>
+    <div class="input-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="userPassword" class="form-control has-toggle" placeholder="••••••••" required>
+        <button type="button" class="toggle-password-btn" id="togglePasswordBtn" title="Toggle password visibility">
+            <i class="fas fa-eye" id="togglePasswordIcon"></i>
+        </button>
+    </div>
+</div>
+
+            <div class="utilities">
+                <a class="forgot-link" id="forgotPasswordLink">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-submit" id="loginSubmitBtn">
+                Sign In <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <div class="footer-note">
+            Restaurant IMS is an internal system. Accounts are provisioned by the restaurant manager.
+        </div>
+    </div>
+
+    <script type="module">
+    import { signInWithEmailAndPassword, sendPasswordResetEmail }
+        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { collection, query, where, getDocs }
+        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    let db, auth, firebaseConfig;
+    try {
+        const configModule = await import('./firebase-config.js');
+        db = configModule.db;
+        const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+        auth = getAuth();
+    } catch (err) {
+        console.error('Firebase failed to initialize:', err);
+        showError('Could not connect to the system. Please try again later.');
+    }
+
+    const MANAGER_UID = '1lucTi9XLecpPBZO8hXSvV3nRVM2';
+    const KITCHEN_UID = 'zT0GE0lBlqUM5Sp2jN9mtyvhg3o1';
+    const OWNER_UID   = 'NvaISfjul6Y0mTNLBmSPZCGfHcB2';
+
+    const form        = document.getElementById('loginForm');
+    const errorBox    = document.getElementById('loginError');
+    const submitBtn   = document.getElementById('loginSubmitBtn');
+    const emailInput  = document.getElementById('userEmail');
+    const forgotLink  = document.getElementById('forgotPasswordLink');
+
+    // Toggle Password Visibility
+    const passwordInput = document.getElementById('userPassword');
+    const toggleBtn     = document.getElementById('togglePasswordBtn');
+    const toggleIcon    = document.getElementById('togglePasswordIcon');
+
+    toggleBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        toggleIcon.className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+
+    function showError(message) {
+        errorBox.textContent = message;
+        errorBox.style.display = 'block';
+    }
+
+    function clearError() {
+        errorBox.style.display = 'none';
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearError();
+
+        const email    = emailInput.value.trim();
+        const password = document.getElementById('userPassword').value;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Signing in... <i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const userCred = await signInWithEmailAndPassword(auth, email, password);
+            const uid = userCred.user.uid;
+            
+            // 1. Owner Role Check
+            if (uid === OWNER_UID) {
+                window.location.href = 'owner_dashboard.html';
+                return;
+            }
+
+            // 2. Manager Role Check
+            if (uid === MANAGER_UID) {
+                window.location.href = 'manager_dashboard.html';
+                return;
+            }
+
+            // 3. Kitchen Staff Role Check
+            if (uid === KITCHEN_UID) {
+                window.location.href = 'kitchen_dashboard.html';
+                return;
+            }
+
+            // 4. Supplier Role Check (Firestore Lookup)
+            const supplierQuery = query(collection(db, 'suppliers'), where('auth_uid', '==', uid));
+            const snapshot = await getDocs(supplierQuery);
+
+            if (!snapshot.empty) {
+                window.location.href = 'supplier_dashboard.html';
+                return;
+            }
+
+            // Fallback for unauthorized accounts
+            showError('This account is not authorized to access this system. Please contact management.');
+            await auth.signOut();
+
+        } catch (err) {
+            console.error('Login error:', err);
+            if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+                showError('Incorrect email or password.');
+            } else if (err.code === 'auth/too-many-requests') {
+                showError('Too many failed attempts. Please wait a moment and try again.');
+            } else {
+                showError('Login failed: ' + err.message);
+            }
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right"></i>';
+        }
+    });
+
+    forgotLink.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        if (!email) {
+            showError('Please enter your email above first, then click "Forgot Password?".');
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(auth, email);
+            clearError();
+            alert(`Password reset email sent to ${email}. Please check your inbox.`);
+        } catch (err) {
+            console.error('Password reset error:', err);
+            showError('Could not send reset email: ' + err.message);
+        }
+    });
+
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+
+</body>
+</html>

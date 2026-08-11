@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Partner Portal - Restaurant IMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --sidebar-bg: #0f172a; /* Deep distinct slate/charcoal for external portal */
+            --text-main: #334155;
+            --color-success: #10b981; /* Delivered / Shipped */
+            --color-warning: #f59e0b; /* Pending / Processing */
+            --color-danger: #ef4444;  /* Canceled / Overdue */
+            --color-primary: #3b82f6; /* Action Buttons / New Orders */
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Sidebar Navigation Layout */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #3b82f6;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu li.active a, .sidebar-menu li a:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            padding-top: 1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Workspace Main Layout */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .top-bar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .workspace {
+            padding: 2rem;
+            flex: 1;
+            display: none;
+        }
+
+        .workspace.active-view {
+            display: block;
+        }
+
+        /* Data Tables & Content Elements */
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .table-container {
+            background: #ffffff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            overflow: hidden;
+            margin-top: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Custom Status Pill Badges */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-success { background: #d1fae5; color: var(--color-success); }
+        .badge-warning { background: #fef3c7; color: var(--color-warning); }
+        .badge-danger { background: #fee2e2; color: var(--color-danger); }
+        .badge-primary { background: #dbeafe; color: var(--color-primary); }
+
+        /* Buttons Design System */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-success { background-color: var(--color-success); color: white; }
+        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: var(--text-main); }
+
+        /* Nested Summary List Box */
+        .order-details-box {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-top: 6px;
+            font-size: 0.85rem;
+            border-left: 4px solid var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="brand"><i class="fas fa-handshake"></i> Supplier Portal</div>
+            <ul class="sidebar-menu">
+                <li id="nav-orders" class="active">
+                    <a href="#" onclick="switchSection('ordersView', 'nav-orders')">
+                        <i class="fas fa-shopping-cart"></i> My Orders
+                    </a>
+                </li>
+                <li id="nav-shipments">
+                    <a href="#" onclick="switchSection('shipmentsView', 'nav-shipments')">
+                        <i class="fas fa-truck"></i> Shipments Log
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-badge">
+                <i class="fas fa-building" style="color: #3b82f6;"></i>
+                <div>
+                    <p style="font-weight: 600;">Fresh Goods Corp</p>
+                    <p style="font-size: 0.75rem; color: #64748b;">ID: SUP-4021</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 id="sectionTitle">My Orders</h2>
+            <button class="btn btn-outline btn-sm" onclick="window.location.href='index.html'">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div id="ordersView" class="workspace active-view">
+            <div class="page-header">
+                <h3>Incoming Restaurant Purchase Orders</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Review incoming item requisitions issued by the restaurant management.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PO Number</th>
+                            <th>Date Received</th>
+                            <th>Requested Items Summary</th>
+                            <th>Total Amount Due</th>
+                            <th>Status Badge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>#PO-101</strong></td>
+                            <td>May 20, 2026</td>
+                            <td>
+                                <div class="order-details-box">
+                                    • Chicken Breasts (10 kg)<br>
+                                    • Tomato Sauce (5 packs)
+                                </div>
+                            </td>
+                            <td>$1,250.00</td>
+                            <td><span class="badge badge-primary"><i class="fas fa-envelope-open"></i> Approved</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>#PO-102</strong></td>
+                            <td>May 21, 2026</td>
+                            <td>
+                                <div class="order-details-box">
+                                    • Extra Virgin Olive Oil (5 Liters)
+                                </div>
+                            </td>
+                            <td>$500.00</td>
+                            <td><span class="badge badge-warning"><i class="fas fa-clock"></i> Pending Review</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="shipmentsView" class="workspace">
+            <div class="page-header">
+                <h3>Active Shipments & Logistics Log</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Dispatch shipments and manage structural real-time tracking parameters for the delivery dock.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Estimated Delivery Date</th>
+                            <th>Shipping Status</th>
+                            <th style="text-align: right;">Action Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>#PO-101</strong></td>
+                            <td>10/07/2026</td>
+                            <td><span id="status-po101" class="badge badge-warning"><i class="fas fa-warehouse"></i> Processing / Ready</span></td>
+                            <td style="text-align: right;">
+                                <button id="btn-po101" class="btn btn-sm btn-success" onclick="shipOrder('po101')">
+                                    <i class="fas fa-shipping-fast"></i> Mark As Shipped
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>#PO-102</strong></td>
+                            <td>11/07/2026</td>
+                            <td><span class="badge badge-success"><i class="fas fa-check-circle"></i> Delivered & Verified</span></td>
+                            <td style="text-align: right;">
+                                <button class="btn btn-sm btn-outline" disabled>
+                                    <i class="fas fa-lock"></i> Manifest Closed
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchSection(viewId, navId) {
+            // Hide all active view panels
+            document.querySelectorAll('.workspace').forEach(view => {
+                view.classList.remove('active-view');
+            });
+            // Show selected view panel
+            document.getElementById(viewId).classList.add('active-view');
+
+            // Toggle active styling link on sidebar menu
+            document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                li.classList.remove('active');
+            });
+            document.getElementById(navId).classList.add('active');
+
+            // Update top bar text context dynamically
+            const activeText = document.getElementById(navId).innerText;
+            document.getElementById('sectionTitle').textContent = activeText;
+        }
+
+        // Functional simulation of a Supabase DB context mutation update call
+        function shipOrder(id) {
+            const statusBadge = document.getElementById(`status-${id}`);
+            const actionButton = document.getElementById(`btn-${id}`);
+
+            if(statusBadge && actionButton) {
+                // Mutate view properties to mimic real-time DB write execution success
+                statusBadge.className = "badge badge-success";
+                statusBadge.innerHTML = '<i class="fas fa-truck"></i> Shipped / In Transit';
+
+                actionButton.className = "btn btn-sm btn-outline";
+                actionButton.disabled = true;
+                actionButton.innerHTML = '<i class="fas fa-check"></i> Dispatched to Restaurant';
+
+                alert(`Order #${id.toUpperCase()} has been dispatched. The status tracking matrix has updated the database successfully.`);
+            }
+        }
+    </script>
+</body>
+</html>

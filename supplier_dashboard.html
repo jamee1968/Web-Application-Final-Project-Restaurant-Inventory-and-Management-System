@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Partner Portal - Restaurant IMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="supplier_dashboard.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="brand"><i class="fas fa-handshake"></i> Supplier Portal</div>
+            <ul class="sidebar-menu">
+                <li id="nav-orders" class="active">
+                    <a href="#" onclick="switchSection('ordersView', 'nav-orders')">
+                        <i class="fas fa-shopping-cart"></i> My Orders
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-badge">
+                <i class="fas fa-building icon-blue"></i>
+                <div>
+                    <p id="supplier-name-label" class="fw-600">Loading...</p>
+                    <p id="supplier-id-label" class="text-muted small-text">—</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h2>My Orders</h2>
+            <button class="btn btn-outline btn-sm" onclick="handleSupplierLogout()" title="Log out">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div id="ordersView" class="workspace active-view">
+            <div class="page-header">
+                <h3>All Purchase Orders</h3>
+                <p class="text-muted">Track incoming orders from receipt through delivery and invoicing.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <tr class="loading-row"><td colspan="5">Loading your orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ INVOICE SUBMISSION MODAL ══ -->
+    <div id="invoiceModal">
+        <div class="modal-box">
+            <h3 class="mb-1"><i class="fas fa-file-invoice-dollar"></i> Submit Delivery Invoice</h3>
+            <p class="modal-note">Enter the price per unit for this delivery — the total will be calculated automatically.</p>
+
+            <div class="form-group">
+                <label for="invoice-item-label">Item</label>
+                <input id="invoice-item-label" type="text" class="form-control" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="invoice-qty-label">Quantity Delivered</label>
+                <input id="invoice-qty-label" type="text" class="form-control" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="invoice-unit-price-input">Unit Price (BDT)</label>
+                <input id="invoice-unit-price-input" type="number" class="form-control" min="0" step="0.01"
+                       oninput="updateInvoiceTotal()" placeholder="e.g. 250.00">
+            </div>
+
+            <div class="form-group">
+                <label for="invoice-total-display">Total Amount</label>
+                <input id="invoice-total-display" type="text" class="form-control" disabled value="৳ 0.00">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeInvoiceModal()">Cancel</button>
+                <button class="btn btn-success" onclick="submitInvoice()">
+                    <i class="fas fa-check"></i> Submit Invoice
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SHIP CONFIRMATION MODAL ══ -->
+<div id="shipModal">
+    <div class="modal-box"></div>
+</div>
+
+<script>
+    function switchSection(viewId, navId) {
+        document.querySelectorAll('.workspace').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(viewId).classList.add('active-view');
+    }
+    window.switchSection = switchSection;
+
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) window.location.reload();
+    });
+</script>
+
+<script type="module" src="supplier.js"></script>
+
+</body>
+</html>

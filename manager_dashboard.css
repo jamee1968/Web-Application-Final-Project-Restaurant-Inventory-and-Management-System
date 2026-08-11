@@ -1,0 +1,775 @@
+/* ============================================================
+   manager_dashboard.css
+   Restaurant IMS — Manager Workspace Styles
+   ============================================================ */
+
+:root {
+    --bg-primary: #f8f9fa;
+    --sidebar-bg: #1e293b;
+    --text-main: #334155;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-primary: #3b82f6;
+    --border-radius: 8px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--bg-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    color: var(--text-main);
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--sidebar-bg);
+    color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar .brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+}
+
+.sidebar-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #94a3b8;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.sidebar-menu li.active a,
+.sidebar-menu li a:hover {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+.sidebar-footer {
+    border-top: 1px solid #334155;
+    padding-top: 1rem;
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+}
+
+/* ── Main Content ── */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.top-bar {
+    height: 70px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.workspace {
+    padding: 2rem;
+    flex: 1;
+    display: none;
+    overflow-y: auto;
+}
+
+.workspace.active-view {
+    display: block;
+}
+
+/* ── KPI Cards ── */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+}
+
+.metric-info h4 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.metric-info p {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--sidebar-bg);
+}
+
+.metric-card i {
+    font-size: 2rem;
+    opacity: 0.25;
+}
+
+/* Circular Icon Container Base */
+.metric-card .kpi-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* 1. Blue Circle (Total Items) */
+.metric-card .icon-blue {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+/* 2. Red Circle (Low Stock Items) */
+.metric-card .icon-red {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* 3. Amber/Orange Circle (Pending POs) */
+.metric-card .icon-amber {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+/* 4. Green Circle (Upcoming Deliveries) */
+.metric-card .icon-green {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+/* ── Split Layout ── */
+.dashboard-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Restrain Active Low Stock Alerts and make its body scrollable if items grow */
+.dashboard-split .panel-card {
+    max-height: 380px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Remove container border so empty tall space doesn't draw bottom lines */
+.dashboard-split .panel-card .table-container {
+    max-height: 280px;
+    height: auto;
+    overflow-y: auto;
+    border: none;
+}
+
+/* Place border directly around the active table rows */
+.dashboard-split .panel-card table {
+    border: 1px solid #cbd5e1;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+/* Activity feed vertical scroll styling */
+.dashboard-split .panel-card .activity-feed {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.activity-feed {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 6px; /* Space for scrollbar */
+}
+
+@media (max-width: 900px) {
+    .dashboard-split { grid-template-columns: 1fr; }
+}
+
+.panel-card {
+    background: #ffffff;
+    border-radius: var(--border-radius);
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+}
+
+.panel-card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+}
+
+/* ── Activity Feed ── */
+.activity-feed {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-feed li {
+    font-size: 0.9rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.activity-feed li i {
+    color: var(--color-primary);
+    margin-top: 3px;
+}
+
+.activity-time {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    display: block;
+}
+
+/* ── Tables ── */
+.table-container {
+    background: #ffffff;
+    border-radius: var(--border-radius);
+    overflow-y: auto;
+    border: 1px solid #cbd5e1; /* Darker border for higher box visibility */
+    margin-top: 1rem;
+    max-height: calc(100vh - 180px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Soft depth */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 8px 16px; /* Reduced vertical padding (thinner rows) */
+    border-bottom: 1px solid #cbd5e1; /* Darker row divider lines */
+    font-size: 0.875rem;
+    color: #0f172a; /* Darker, high-contrast text */
+}
+
+th {
+    background-color: #f1f5f9; /* Slightly darker header background */
+    font-weight: 700;
+    color: #1e293b; /* Crisp, readable header text */
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 2px solid #94a3b8; /* Strong header separation border */
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Enlarge checkboxes to match line height & improve alignment */
+.po-items-scroll-container input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    vertical-align: middle;
+    accent-color: var(--color-primary); /* Uses theme color when checked */
+}
+
+/* Enhance Quantity Input Visibility */
+.po-items-scroll-container input[type="number"],
+.po-items-scroll-container .form-control {
+    border: 1.5px solid #94a3b8; /* Darker, distinct border */
+    background-color: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* High-contrast focus state when typing in quantity */
+.po-items-scroll-container input[type="number"]:focus,
+.po-items-scroll-container .form-control:focus {
+    border-color: var(--color-primary);
+    background-color: #f0f9ff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+/* ── Badges ── */
+.badge {
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-success { background: #d1fae5; color: var(--color-success); }
+.badge-warning { background: #fef3c7; color: var(--color-warning); }
+.badge-danger  { background: #fee2e2; color: var(--color-danger); }
+
+/* ── Forms ── */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--border-radius);
+    outline: none;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.form-control:focus {
+    border-color: var(--color-primary);
+}
+
+/* ── Buttons ── */
+.btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.88; }
+
+.btn-primary { background-color: var(--color-primary); color: white; }
+.btn-success { background-color: var(--color-success); color: white; }
+.btn-outline { background: transparent; border: 1px solid #cbd5e1; color: var(--text-main); }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+/* ── Loading State ── */
+.loading-row td {
+    text-align: center;
+    color: #94a3b8;
+    font-style: italic;
+    padding: 24px;
+}
+
+/* ── Delivery Modal ── */
+#deliveryModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#deliveryModal .modal-box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 550px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+#deliveryModal table th {
+    padding: 8px 0;
+    font-size: 0.85rem;
+    color: #475569;
+    border-bottom: 2px solid #e2e8f0;
+    background: transparent;
+}
+
+#deliveryModal table td {
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#deliveryModal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+/* ── Ingredient Add/Edit Modal (reuses deliveryModal's overlay pattern) ── */
+#ingredientModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#ingredientModal .modal-box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+#supplierModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#supplierModal .modal-box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Utility classes (replacing inline styles) ── */
+
+.icon-danger {
+    color: var(--color-danger);
+}
+
+.text-muted {
+    color: #64748b;
+}
+
+.mb-1 {
+    margin-bottom: 1rem;
+}
+
+.mb-05 {
+    margin-bottom: 0.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+}
+
+.max-width-po-form {
+    max-width: 600px;
+}
+
+.field-disabled-note {
+    color: var(--text-main);
+}
+
+.action-buttons-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+.modal-note {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.delivery-summary-table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.delivery-summary-table th {
+    text-align: left;
+}
+
+.delivery-summary-table .col-center {
+    text-align: center;
+}
+
+.delivery-summary-table .col-right {
+    text-align: right;
+}
+
+.delivery-qty-cell {
+    padding: 10px 0;
+    font-weight: 600;
+}
+
+.delivery-ordered-cell {
+    padding: 10px;
+    text-align: center;
+    color: #64748b;
+}
+
+.delivery-input-cell {
+    padding: 10px;
+    text-align: right;
+}
+
+.delivery-qty-input {
+    width: 90px;
+    display: inline-block;
+    text-align: center;
+}
+
+.hidden-field {
+    display: none;
+}
+
+.zero-note {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: -0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.credential-copy-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+}
+
+.credential-copy-buttons .btn {
+    flex: 1;
+    justify-content: center;
+}
+
+.done-btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.credentials-textarea {
+    font-family: monospace;
+    resize: none;
+}
+
+.italic-text {
+    font-style: italic;
+}
+
+.icon-muted {
+    font-size: 2rem;
+    color: #94a3b8;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+.small-text {
+    font-size: 0.75rem;
+}
+
+.po-items-scroll-container {
+    max-height: 290px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
+}
+
+.po-items-scroll-container table {
+    margin: 0;
+}
+
+.po-items-scroll-container thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.po-search-input {
+    margin-bottom: 0.75rem;
+}
+
+.add-new-ingredient-row {
+    background: #f0f9ff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-new-ingredient-row:hover {
+    background: #e0f2fe;
+}
+
+.row-status-pending   { background-color: #fff7ed; }
+.row-status-shipped   { background-color: #eff6ff; }
+.row-status-delivered { background-color: #ecfdf5; }
+
+#shipModal-placeholder { display: none; } /* not used on manager side, ignore */
+
+#paymentModal {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+    align-items: center; justify-content: center; z-index: 1000;
+}
+#paymentModal .modal-box {
+    background: #fff; padding: 2rem; border-radius: var(--border-radius);
+    width: 400px; max-width: 90%;
+}
+
+/* ── PO chips bar ── */
+.po-label-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.po-section-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+    padding-top: 4px;
+}
+
+.po-chips-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+}
+
+.chips-empty {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-style: italic;
+    padding-top: 4px;
+}
+
+.po-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+    border-radius: 20px;
+    padding: 3px 10px 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+.po-chip strong {
+    color: #1e40af;
+    font-weight: 700;
+}
+
+.po-chip button {
+    background: none;
+    border: none;
+    color: #93c5fd;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 0 0 2px;
+    font-weight: 700;
+}
+
+.po-chip button:hover {
+    color: var(--color-danger);
+}
+
+.supplier-name-tag {
+    font-size: 0.93rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
