@@ -1,0 +1,428 @@
+:root {
+            --bg-primary: #f8f9fa;
+            --sidebar-bg: #0f172a; /* Slate Black for administrative/executive tone */
+            --text-main: #334155;
+            --color-success: #10b981; /* Paid / Secure Access */
+            --color-warning: #f59e0b; /* Processing / Pending Invoices */
+            --color-danger: #ef4444;  /* Unpaid Balance / Restricted Account */
+            --color-primary: #3b82f6; /* Action triggers / Payment buttons */
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Executive Left Navigation Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f8fafc;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu li.active a, .sidebar-menu li a:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            padding-top: 1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Workspace Panels Layout */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .top-bar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .workspace {
+            padding: 2rem;
+            flex: 1;
+            display: none;
+        }
+
+        .workspace.active-view {
+            display: block;
+        }
+
+        /* Macro Metric Stat Cards Row */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-info h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-info p {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--sidebar-bg);
+        }
+
+        .metric-card i {
+            font-size: 2rem;
+            opacity: 0.25;
+            color: var(--color-primary);
+        }
+
+        /* Data Tables Container Components */
+        .panel-card {
+            background: #ffffff;
+            border-radius: var(--border-radius);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+/* Colorful Icon Badge & Container Styling */
+.kpi-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    margin-top: 0;
+    margin-bottom: 8px;
+    width: fit-content;
+    background: #ffffff;
+    padding: 3px 5px;
+    background: linear-gradient(135deg, #cfd0fe 0%, #458afa 100%);
+    border-radius: 30px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Bright Gradient Icon Circle */
+.kpi-filter-container i {
+    color: #ffffff;
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
+}
+
+.kpi-filter-container select {
+    padding: 5px 10px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background-color: #f8fafc;
+    color: #1e293b;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.kpi-filter-container select:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+}
+
+.kpi-filter-container select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+        .table-container {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Financial Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-success { background: #d1fae5; color: var(--color-success); }
+        .badge-warning { background: #fef3c7; color: var(--color-warning); }
+        .badge-danger { background: #fee2e2; color: var(--color-danger); }
+
+        /* Actions buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-success { background-color: var(--color-success); color: white; }
+        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: var(--text-main); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        /* Report Downloader Card Grid */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .report-card {
+            background: white; border: 1px solid #e2e8f0;
+            padding: 1.5rem; border-radius: var(--border-radius);
+            display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;
+        }
+
+        /* Mock Chart Canvas Frame Layout */
+        .chart-placeholder {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Colorful Metric Card Icon Badges */
+        .metric-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+        .metric-icon.icon-primary { background: rgba(59, 130, 246, 0.12); color: var(--color-primary); }
+        .metric-icon.icon-danger  { background: rgba(239, 68, 68, 0.12);  color: var(--color-danger); }
+        .metric-icon.icon-success { background: rgba(16, 185, 129, 0.12); color: var(--color-success); }
+        .metric-icon.icon-warning { background: rgba(245, 158, 11, 0.12); color: var(--color-warning); }
+        /* Badge variant matching primary accent color */
+        .badge-primary { background: rgba(59, 130, 246, 0.12); color: var(--color-primary); }
+
+        /* AI Strategic Insights Panel — light theme matching the rest of the interface */
+        .ai-panel {
+            background: #daeaf7;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        .ai-panel-header h3 {
+            color: var(--sidebar-bg);
+            font-size: 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .ai-insight-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .ai-insight-card .insight-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .ai-insight-card .insight-body {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .ai-insight-card .insight-body strong {
+            font-size: 1.05rem;
+        }
+
+        /* Per-row supplier discrepancy line with contact button on the right */
+        .discrepancy-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.92rem;
+            color: var(--text-main);
+            border-bottom: 1px dashed #e2e8f0;
+            padding: 8px 0;
+        }
+
+        .discrepancy-row:last-child { border-bottom: none; }
+
+        .discrepancy-info { flex: 1; min-width: 0; }
+
+        .discrepancy-loss {
+            color: var(--color-danger);
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .btn-contact-row {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-primary);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-contact-row:hover { background: rgba(59, 130, 246, 0.18); }
+        .btn-contact-row:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+        }
+
+
+
+        /* 1. Remove bottom space from the top header bar */
+.top-bar, 
+header {
+    margin-bottom: 8px !important;
+    padding-bottom: 3px !important;
+}
+
+
+/* 2. Remove top padding from the main workspace content area */
+.workspace,
+#dashView {
+    padding-top: 5px !important;
+}

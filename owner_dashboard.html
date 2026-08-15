@@ -6,243 +6,11 @@
     <title>Owner & Admin Executive Terminal - Restaurant IMS</title>
     <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-primary: #f8f9fa;
-            --sidebar-bg: #0f172a; /* Slate Black for administrative/executive tone */
-            --text-main: #334155;
-            --color-success: #10b981; /* Paid / Secure Access */
-            --color-warning: #f59e0b; /* Processing / Pending Invoices */
-            --color-danger: #ef4444;  /* Unpaid Balance / Restricted Account */
-            --color-primary: #3b82f6; /* Action triggers / Payment buttons */
-            --border-radius: 8px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            display: flex;
-            min-height: 100vh;
-            color: var(--text-main);
-        }
-
-        /* Executive Left Navigation Sidebar */
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .sidebar .brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 2.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #f8fafc;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex-grow: 1;
-        }
-
-        .sidebar-menu li a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #94a3b8;
-            padding: 12px;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .sidebar-menu li.active a, .sidebar-menu li a:hover {
-            background-color: #1e293b;
-            color: #ffffff;
-        }
-
-        .sidebar-footer {
-            border-top: 1px solid #1e293b;
-            padding-top: 1rem;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: #cbd5e1;
-        }
-
-        /* Workspace Panels Layout */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-        }
-
-        .top-bar {
-            height: 70px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .workspace {
-            padding: 2rem;
-            flex: 1;
-            display: none;
-        }
-
-        .workspace.active-view {
-            display: block;
-        }
-
-        /* Macro Metric Stat Cards Row */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .metric-card {
-            background: #ffffff;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.01);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e2e8f0;
-        }
-
-        .metric-info h4 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: #64748b;
-            margin-bottom: 0.25rem;
-        }
-
-        .metric-info p {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--sidebar-bg);
-        }
-
-        .metric-card i {
-            font-size: 2rem;
-            opacity: 0.25;
-            color: var(--color-primary);
-        }
-
-        /* Data Tables Container Components */
-        .panel-card {
-            background: #ffffff;
-            border-radius: var(--border-radius);
-            border: 1px solid #e2e8f0;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .table-container {
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            margin-top: 1rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.9rem;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #64748b;
-        }
-
-        /* Financial Badges */
-        .badge {
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .badge-success { background: #d1fae5; color: var(--color-success); }
-        .badge-warning { background: #fef3c7; color: var(--color-warning); }
-        .badge-danger { background: #fee2e2; color: var(--color-danger); }
-
-        /* Actions buttons */
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-        }
-        .btn-primary { background-color: var(--color-primary); color: white; }
-        .btn-success { background-color: var(--color-success); color: white; }
-        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: var(--text-main); }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-
-        /* Report Downloader Card Grid */
-        .report-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .report-card {
-            background: white; border: 1px solid #e2e8f0;
-            padding: 1.5rem; border-radius: var(--border-radius);
-            display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;
-        }
-
-        /* Mock Chart Canvas Frame Layout */
-        .chart-placeholder {
-            background: #f1f5f9;
-            border: 2px dashed #cbd5e1;
-            border-radius: var(--border-radius);
-            padding: 3rem;
-            text-align: center;
-            color: #64748b;
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- ADD THIS LINE FOR CHARTS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="owner_dashboard.css">
 </head>
 <body>
 
@@ -273,22 +41,151 @@
     <div class="main-content">
         <div class="top-bar">
             <h2 id="viewHeaderTitle">Dashboard Overview</h2>
+            
             <button class="btn btn-outline btn-sm" onclick="handleOwnerLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
 
         <!-- PANEL 1: GENERAL EXECUTIVE MACRO DASHBOARD -->
         <div id="dashView" class="workspace active-view">
-            <div class="metrics-grid">
-    <div class="metric-card"><div class="metric-info"><h4>Total Store Spendings</h4><p id="kpi-total-spend">৳0.00</p></div><i class="fas fa-wallet"></i></div>
-    <div class="metric-card"><div class="metric-info"><h4>Outstanding Owed Liabilities</h4><p id="kpi-outstanding" style="color: var(--color-danger)">৳0.00</p></div><i class="fas fa-hand-holding-dollar"></i></div>
-    <div class="metric-card"><div class="metric-info"><h4>Procured Invoices Settled</h4><p id="kpi-settled">0</p></div><i class="fas fa-file-shield"></i></div>
+            <div class="kpi-filter-container">
+    <i class="fas fa-filter"></i>
+    <select id="kpiDateRangeSelect" onchange="refreshDashboardKPIs()">
+        <option value="thisMonth" selected>This Month</option>
+        <option value="prevMonth">Previous Month</option>
+        <option value="30days">Last 30 Days</option>
+        <option value="thisYear">This Year</option>
+        <option value="all">All Time</option>
+    </select>
 </div>
 
-            <div class="panel-card">
-                <h3><i class="fas fa-shield-halved"></i> Operational Security Overview</h3>
-                <p style="font-size: 0.95rem; color: #64748b; margin-top: 0.5rem;">All database modules are reporting operational compliance. Use the navigation links to handle structural asset releases, balance ledgers, and role parameters.</p>
+            <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-info"><h4>Total Store Spendings</h4><p id="kpi-total-spend">৳0.00</p></div><span class="metric-icon icon-primary"><i class="fas fa-wallet"></i></span></div>
+    <div class="metric-card"><div class="metric-info"><h4>Outstanding Owed Liabilities</h4><p id="kpi-outstanding" style="color: var(--color-danger)">৳0.00</p></div><span class="metric-icon icon-danger"><i class="fas fa-hand-holding-dollar"></i></span></div>
+    <div class="metric-card"><div class="metric-info"><h4>Procured Invoices Settled</h4><p id="kpi-settled">0</p></div><span class="metric-icon icon-success"><i class="fas fa-file-shield"></i></span></div>
+    <div class="metric-card">
+    <div class="metric-info">
+        <h4>Orders Awaiting Payment</h4>
+        <p id="kpi-pending-count" style="color: var(--color-danger)">0</p>
+    </div>
+    <span class="metric-icon icon-danger"><i class="fas fa-clock"></i></span>
+</div>
+
+</div>
+
+            <!-- AI Strategic Insights Executive Panel -->
+<div class="ai-panel">
+    <div class="ai-panel-header">
+        <h3>
+            <i class="fas fa-brain" style="color: var(--color-primary);"></i> AI Strategic Insights
+        </h3>
+        <span class="badge badge-primary">
+            <i class="fas fa-bolt" style="font-size: 0.7rem;"></i> Live System Audit
+        </span>
+    </div>
+
+    <div class="ai-insights-grid">
+
+        <!-- Insight 1: Price Surge Alert (Multi-Item List) -->
+        <div class="ai-insight-card" style="border-left: 4px solid var(--color-danger);">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                    <span class="insight-label" style="color: var(--color-danger);">Price Surge Alerts</span>
+                    <i class="fas fa-arrow-trend-up" style="color: var(--color-danger);"></i>
+                </div>
+                <!-- Scrollable list container for up to 10 price hikes -->
+                <div id="ai-insight-price" class="insight-body" style="max-height: 140px; overflow-y: auto; padding-right: 4px;">
+                    Analyzing historical unit costs...
+                </div>
             </div>
+            <div id="ai-price-action" style="margin-top: 1rem;"></div>
         </div>
+
+        <!-- Insight 2: Cash Flow Forecast -->
+        <div class="ai-insight-card" style="border-left: 4px solid var(--color-warning);">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                    <span class="insight-label" style="color: var(--color-warning);">Cash Flow Forecast</span>
+                    <i class="fas fa-wallet" style="color: var(--color-warning);"></i>
+                </div>
+                <div id="ai-insight-cash" class="insight-body">
+                    Calculating 7-day & 30-day projections...
+                </div>
+            </div>
+            <div id="ai-cash-action" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Insight 3: Discrepancy & Waste Impact (per-supplier rows with contact button) -->
+        <div class="ai-insight-card" style="border-left: 4px solid var(--color-primary);">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                    <span class="insight-label" style="color: var(--color-primary);">Waste & Discrepancies</span>
+                    <i class="fas fa-triangle-exclamation" style="color: var(--color-primary);"></i>
+                </div>
+                <!-- Scrollable list container for vendor discrepancies -->
+                <div id="ai-insight-waste" style="max-height: 160px; overflow-y: auto; padding-right: 4px;">
+                    Auditing unfulfilled delivery logs...
+                </div>
+            </div>
+            <div id="ai-waste-action" style="margin-top: 1rem;"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL: Compare Price Alternatives -->
+<div id="modalPriceCompare" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+    <div style="background:#fff; width:90%; max-width:600px; padding:1.5rem; border-radius:8px; color:#333;">
+        <h3 id="modalCompareTitle" style="margin-bottom:1rem; color:#0f172a;"><i class="fas fa-balance-scale"></i> Supplier Price Comparison</h3>
+        <div id="modalCompareBody">Loading comparison data...</div>
+        <button class="btn btn-outline btn-sm" style="margin-top:1.5rem;" onclick="closeAiModal('modalPriceCompare')">Close</button>
+    </div>
+</div>
+
+<!-- MODAL: Export Payable Schedule -->
+<div id="modalPayableSchedule" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+    <div style="background:#fff; width:90%; max-width:650px; padding:1.5rem; border-radius:8px; color:#333;">
+        <h3 style="margin-bottom:1rem; color:#0f172a;"><i class="fas fa-calendar-days"></i> Upcoming Payable Outlays Schedule</h3>
+        <div id="modalScheduleBody">Loading schedule...</div>
+        <div style="margin-top:1.5rem; display:flex; justify-content:space-between;">
+            <button class="btn btn-outline btn-sm" onclick="closeAiModal('modalPayableSchedule')">Close</button>
+            <button class="btn btn-danger" onclick="downloadPayableSchedulePDF()" style="background:#ef4444; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:600; cursor:pointer;">
+    <i class="fas fa-file-pdf"></i> Download PDF
+</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Contact Supplier Direct Email -->
+<div id="modalContactSupplier" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+    <div style="background:#fff; width:90%; max-width:500px; padding:1.5rem; border-radius:8px; color:#333;">
+        <h3 style="margin-bottom:1rem; color:#0f172a;"><i class="fas fa-paper-plane"></i> Contact Supplier</h3>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <label style="font-size:0.85rem; font-weight:600;">Recipient:</label>
+            <input type="text" id="contactModalEmail" class="form-control" readonly style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+            
+            <label style="font-size:0.85rem; font-weight:600;">Subject:</label>
+            <input type="text" id="contactModalSubject" class="form-control" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+            
+            <label style="font-size:0.85rem; font-weight:600;">Message:</label>
+            <textarea id="contactModalBody" rows="4" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px; font-family:inherit;"></textarea>
+        </div>
+        <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="closeAiModal('modalContactSupplier')">Cancel</button>
+            <button class="btn btn-primary btn-sm" onclick="sendSupplierEmail()"><i class="fas fa-envelope"></i> Send Email</button>
+        </div>
+    </div>
+</div>
+        </div>
+        <!-- DEDICATED MODAL: View Invoice Breakdown -->
+<div id="modalInvoiceDetails" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#fff; width:90%; max-width:650px; padding:1.5rem; border-radius:8px; color:#333;">
+        <h3 id="modalInvoiceTitle" style="margin-bottom:1rem; color:#0f172a;"><i class="fas fa-file-invoice" style="color:#3b82f6;"></i> Invoice Breakdown</h3>
+        <div id="modalInvoiceBody">Loading details...</div>
+        <div style="margin-top:1.5rem; display:flex; justify-content:flex-end;">
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('modalInvoiceDetails').style.display='none'">Close</button>
+        </div>
+    </div>
+</div>
 
         <!-- PANEL 2: SUPPLIER LIABILITY PAYMENTS LEDGER -->
         <div id="paymentsView" class="workspace">
@@ -317,33 +214,48 @@
         </div>
 
         <!-- PANEL 3: EXECUTIVE REPORTS & ANALYTICS WIDGETS -->
-        <div id="reportsView" class="workspace">
-            <h3 style="margin-bottom: 1.5rem;">Financial Analytics & Data Export Controls</h3>
-
-            <div class="report-grid">
-                <div class="report-card">
-                    <div>
-                        <h4><i class="fas fa-file-pdf" style="color: red;"></i> Monthly Expense Ledger Report</h4>
-                        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Aggregates ingredient purchasing costs, freight line item payouts, and open accounts records.</p>
-                    </div>
-                    <button class="btn btn-outline btn-sm" onclick="alert('Compiling transactional archives into PDF export stream...')"><i class="fas fa-download"></i> Export Data (PDF)</button>
-                </div>
-                <div class="report-card">
-                    <div>
-                        <h4><i class="fas fa-file-excel" style="color: green;"></i> Supplier Performance Matrix</h4>
-                        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Tracks fulfillment accuracies, transit latency logs, and rate compliance matrices.</p>
-                    </div>
-                    <button class="btn btn-outline btn-sm" onclick="alert('Formatting relational supplier analytics arrays to CSV spreadsheet...')"><i class="fas fa-download"></i> Export Data (CSV)</button>
-                </div>
-            </div>
-
-            <!-- Dashboard Analytics Chart Container Placeholder -->
-            <div class="chart-placeholder">
-                <i class="fas fa-chart-column" style="font-size: 3.5rem; margin-bottom: 1rem; display:block; color:#94a3b8;"></i>
-                <h3>(Bar Chart Component Area)</h3>
-                <p style="font-size: 0.9rem; margin-top: 6px;">Supabase database query loop parsing store operating data into live charts.</p>
-            </div>
+<!-- PANEL 3: EXECUTIVE REPORTS & ANALYTICS WIDGETS -->
+<div id="reportsView" class="workspace">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3>Financial Analytics & Data Export Controls</h3>
+        
+        <!-- Date Range Filter Selector -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.85rem; font-weight: 600; color: #64748b;"><i class="fas fa-filter"></i> Export Range:</label>
+            <select id="exportDateRange" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 600; color: #0f172a;">
+                <option value="all">All Time (Full Ledger)</option>
+                <option value="today">Today Only</option>
+                <option value="7days">Last 7 Days</option>
+                <option value="month">This Month</option>
+            </select>
         </div>
+    </div>
+
+    <div class="report-grid">
+        <div class="report-card">
+            <div>
+                <h4><i class="fas fa-file-pdf" style="color: #ef4444;"></i> Store Financial Summary Report</h4>
+                <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Generates a clean PDF statement of store spendings, outstanding balance, and audit totals.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="exportStoreReportPDF()"><i class="fas fa-download"></i> Export Data (PDF)</button>
+        </div>
+        <div class="report-card">
+            <div>
+                <h4><i class="fas fa-file-excel" style="color: #10b981;"></i> Supplier Ledger Spreadsheets</h4>
+                <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Exports formatted, Excel-ready supplier transaction logs for selected date range.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="exportSupplierDataCSV()"><i class="fas fa-download"></i> Export Excel (CSV)</button>
+        </div>
+    </div>
+
+    <!-- Live Chart Canvas Container -->
+    <div class="panel-card" style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff;">
+        <h4 style="margin-bottom: 1rem; color: #0f172a;"><i class="fas fa-chart-column" style="color: #3b82f6;"></i> Procurement Financial Overview</h4>
+        <div style="height: 320px; position: relative;">
+            <canvas id="liveAnalyticsChart"></canvas>
+        </div>
+    </div>
+</div>
 
         <!-- PANEL 4: TECHNICAL USER ACCESS CONTROLS (RBAC ENGINES) -->
         <div id="rbacView" class="workspace">
@@ -372,164 +284,6 @@
     </div>
 
     <!-- Administrative Interactivity Automation Scripts -->
-    <script type="module">
-    import { onAuthStateChanged, getAuth, signOut }
-        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { collection, onSnapshot, doc, updateDoc, serverTimestamp }
-        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-    const OWNER_UID   = 'NvaISfjul6Y0mTNLBmSPZCGfHcB2';
-    const MANAGER_UID = '1lucTi9XLecpPBZO8hXSvV3nRVM2';
-
-    let db;
-    try {
-        ({ db } = await import('./firebase-config.js'));
-    } catch (err) {
-        console.error('Firebase failed to initialize:', err);
-        alert('Could not connect to the database.');
-    }
-
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
-        if (!user || user.uid !== OWNER_UID) {
-            window.location.href = 'index.html';
-            return;
-        }
-        listenDeliveries();
-        listenSuppliersAndUsers();
-    });
-
-    window.handleOwnerLogout = async function () {
-        await signOut(auth);
-        window.location.href = 'index.html';
-    };
-
-    function switchWorkspace(panelId, menuId) {
-        document.querySelectorAll('.workspace').forEach(v => v.classList.remove('active-view'));
-        document.getElementById(panelId).classList.add('active-view');
-        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-        document.getElementById(menuId).classList.add('active');
-        document.getElementById('viewHeaderTitle').textContent =
-            document.getElementById(menuId).innerText.trim();
-    }
-    window.switchWorkspace = switchWorkspace;
-
-    // ── Dashboard metrics + Payments ledger, sourced from 'deliveries' ──
-    function listenDeliveries() {
-        onSnapshot(collection(db, 'deliveries'), (snapshot) => {
-            const deliveries = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-            const grouped = {};
-            deliveries.forEach(d => {
-                const key = d.order_id || d.id;
-                if (!grouped[key]) grouped[key] = [];
-                grouped[key].push(d);
-            });
-            window._ownerDeliveriesGrouped = grouped;
-
-            let totalSpend = 0, outstanding = 0, settledCount = 0;
-            const orderSummaries = [];
-
-            Object.entries(grouped).forEach(([orderId, items]) => {
-                const allDelivered = items.every(i =>
-                    i.status === 'Delivered' || i.status === 'Partial Delivery' || i.status === 'Not Delivered');
-                const total = items.reduce((sum, i) => sum + (i.total_amount || 0), 0);
-                const isPaid = items.some(i => i.payment_status === 'Paid');
-                const pendingCash = items.some(i => i.payment_status === 'Pending Cash Confirmation');
-
-                if (isPaid) {
-                    totalSpend += total;
-                    settledCount++;
-                } else if (allDelivered && total > 0) {
-                    outstanding += total;
-                }
-
-                if (allDelivered && total > 0) {
-                    orderSummaries.push({
-                        orderId, items, total,
-                        supplierName: items[0]?.supplier_name || '—',
-                        date: items[0]?.scheduled_date?.toDate?.() || null,
-                        isPaid, pendingCash
-                    });
-                }
-            });
-
-            document.getElementById('kpi-total-spend').textContent  = `৳${totalSpend.toFixed(2)}`;
-            document.getElementById('kpi-outstanding').textContent  = `৳${outstanding.toFixed(2)}`;
-            document.getElementById('kpi-settled').textContent      = settledCount;
-
-            populatePaymentsTable(orderSummaries);
-        });
-    }
-
-    function populatePaymentsTable(orders) {
-        const tbody = document.getElementById('payments-tbody');
-        if (!tbody) return;
-
-        if (orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6">No fulfilled orders yet.</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = orders.map(o => {
-            let badge, actionBtn;
-            if (o.isPaid) {
-                badge = '<span class="badge badge-success">Paid</span>';
-                actionBtn = '<button class="btn btn-sm btn-outline" disabled><i class="fas fa-check"></i> Settled</button>';
-            } else if (o.pendingCash) {
-                badge = '<span class="badge badge-warning">Awaiting Cash Confirmation</span>';
-                actionBtn = '<button class="btn btn-sm btn-outline" disabled><i class="fas fa-hourglass-half"></i> Pending</button>';
-            } else {
-                badge = '<span class="badge badge-danger">Unpaid Invoice</span>';
-                actionBtn = `<button class="btn btn-sm btn-primary" disabled title="Payments are processed from the Manager dashboard">
-                                <i class="fas fa-credit-card"></i> View Only</button>`;
-            }
-
-            const dateStr = o.date ? o.date.toLocaleDateString() : '—';
-
-            return `
-            <tr>
-                <td><strong>${o.orderId}</strong></td>
-                <td>${o.supplierName}</td>
-                <td>${dateStr}</td>
-                <td><strong>৳${o.total.toFixed(2)}</strong></td>
-                <td>${badge}</td>
-                <td style="text-align:right;">${actionBtn}</td>
-            </tr>`;
-        }).join('');
-    }
-
-    // ── RBAC — read-only view of manager + suppliers ──
-    function listenSuppliersAndUsers() {
-        onSnapshot(collection(db, 'suppliers'), (snapshot) => {
-            const suppliers = snapshot.docs.map(d => d.data());
-            populateRbacTable(suppliers);
-        });
-    }
-
-    function populateRbacTable(suppliers) {
-        const tbody = document.getElementById('rbac-tbody');
-        if (!tbody) return;
-
-        const rows = [
-            `<tr>
-                <td><strong>Restaurant Manager</strong></td>
-                <td>—</td>
-                <td><span class="badge badge-warning">Manager</span></td>
-                <td style="text-align:right;"><span class="text-muted small-text">Fixed role</span></td>
-            </tr>`,
-            ...suppliers.map(s => `
-            <tr>
-                <td><strong>${s.name || '—'}</strong></td>
-                <td>${s.email || '—'}</td>
-                <td><span class="badge badge-success">Supplier</span></td>
-                <td style="text-align:right;"><span class="text-muted small-text">Managed via Manager → Suppliers</span></td>
-            </tr>`)
-        ];
-
-        tbody.innerHTML = rows.join('');
-    }
-</script>
+    <script type="module" src="owner.js"></script>
 </body>
 </html>

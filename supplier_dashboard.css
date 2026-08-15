@@ -292,10 +292,10 @@ th {
 
 #shipModal .modal-box {
     background: #fff;
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: var(--border-radius);
-    width: 500px;
-    max-width: 90%;
+    width: 900px;           
+    max-width: 95%;
 }
 
 #shipModal .modal-footer {
@@ -311,10 +311,37 @@ th {
     margin-bottom: 1rem;
 }
 
-.delivery-summary-table th, .delivery-summary-table td {
-    padding: 8px;
+.delivery-summary-table th, 
+.delivery-summary-table td {
+    padding: 12px 10px;      
     border-bottom: 1px solid #e2e8f0;
     text-align: left;
+    font-size: 0.95rem;      
+}
+
+.ship-qty-input,
+.ship-price-input {
+    min-width: 110px;       
+    padding: 8px 10px;
+    font-size: 0.95rem;
+}
+
+.ship-full-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.ship-line-total {
+    font-weight: 500 !important;
+    font-size: 1.1rem !important;
+    color: #0f172a !important;
+    white-space: nowrap !important;
+    min-width: 120px !important;
+}
+#ship-grand-total {
+    font-size: 1.2rem;
+    color: #10b981;
 }
 
 .text-muted { color: #64748b; }
