@@ -486,7 +486,7 @@ async function resetSupplierPassword(email) {
 //  4f. DELETE SUPPLIER AUTH ACCOUNT — via external admin server
 // ============================================================
 
-const ADMIN_SERVER_URL = 'http://localhost:3001'; // ← local for now, update to Render URL after deployment
+const ADMIN_SERVER_URL = 'https://restaurant-ims-backend-bxh7.onrender.com';
 
 async function deleteUserAsManager(targetUid) {
     try {
