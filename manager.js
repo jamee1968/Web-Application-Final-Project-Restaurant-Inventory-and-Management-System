@@ -13,7 +13,7 @@ import {
 
 import { initializeApp, deleteApp } 
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, fetchSignInMethodsForEmail } 
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, fetchSignInMethodsForEmail } 
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
     emailjs.init('fdO0MM1dm2ijW__kd');   // ← replace with your real Public Key from EmailJS
@@ -1539,13 +1539,34 @@ function initDashboard() {
         console.log('🔴 db is falsy — listeners will NOT run.');
         return;
     }
+
+    // CHECK AUTHENTICATION AND SWITCH TAB ON PAYMENT REDIRECT
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            // If user lost session/token, send to login
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Switch to delivery logs tab if returning from payment
+        if (window.location.hash === '#delivery-logs') {
+            const deliveryTabBtn = document.querySelector('[data-section="delivery-logs"]') 
+                                || document.getElementById('delivery-logs-tab')
+                                || document.querySelector('a[href="#delivery-logs"]');
+            if (deliveryTabBtn) {
+                deliveryTabBtn.click();
+            }
+        }
+    });
+
     console.log('🟢 Starting listeners...');
     listenInventory();
     listenSuppliers();
     listenPurchaseOrders();
     listenDeliveries();
     listenActivities();
-    console.log('🟢 All listen...() calls completed (snapshot callbacks are async, may fire later).');
+    console.log('🟢 All listen...() calls completed.');
 }
 
 if (document.readyState === 'loading') {
@@ -1554,3 +1575,16 @@ if (document.readyState === 'loading') {
     // DOMContentLoaded already fired before this module ran — call directly
     initDashboard();
 }
+
+// Automatically switch to Delivery Logs tab when redirected back from SSLCommerz payment
+window.addEventListener('DOMContentLoaded', () => {
+    if (window.location.hash === '#delivery-logs') {
+        // Triggers the tab click for Delivery Logs
+        const deliveryTabBtn = document.querySelector('[data-section="delivery-logs"]') 
+                            || document.getElementById('delivery-logs-tab')
+                            || document.querySelector('a[href="#delivery-logs"]');
+        if (deliveryTabBtn) {
+            deliveryTabBtn.click();
+        }
+    }
+});
