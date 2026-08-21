@@ -1620,7 +1620,7 @@ async function handlePostPaymentEmail() {
         try {
             console.log('🟡 Processing post-payment notification for:', orderId);
             
-            // 1. Find delivery document
+            // 1. Fetch delivery record
             const q = query(collection(db, 'deliveries'), where('order_id', '==', orderId));
             const querySnapshot = await getDocs(q);
             
@@ -1628,39 +1628,52 @@ async function handlePostPaymentEmail() {
                 const deliveryData = querySnapshot.docs[0].data();
                 const poRefId = deliveryData.po_ref_id || orderId;
 
-                // 2. Fetch order details from purchaseOrders collection
                 let supplierEmail = '';
                 let supplierName = 'Supplier';
                 let amount = deliveryData.total_price || deliveryData.amount || 0;
+                let supplierId = '';
 
-                const poDoc = await getDoc(doc(db, 'purchaseOrders', poRefId));
+                // 2. Query purchaseOrders collection
+                const poQuery = query(collection(db, 'purchaseOrders'), where('order_id', '==', orderId));
+                const poSnap = await getDocs(poQuery);
                 
-                if (poDoc.exists()) {
-                    const poData = poDoc.data();
+                if (!poSnap.empty) {
+                    const poData = poSnap.docs[0].data();
                     supplierEmail = poData.supplierEmail || poData.supplier_email || poData.email || '';
                     supplierName  = poData.supplierName  || poData.supplier_name  || 'Supplier';
                     amount        = poData.totalAmount   || poData.total_amount   || amount;
-                } else {
-                    console.warn('⚠️ PO doc not found directly by ID, trying query...');
-                    const poQuery = query(collection(db, 'purchaseOrders'), where('order_id', '==', orderId));
-                    const poSnap = await getDocs(poQuery);
-                    if (!poSnap.empty) {
-                        const poData = poSnap.docs[0].data();
-                        supplierEmail = poData.supplierEmail || poData.supplier_email || poData.email || '';
-                        supplierName  = poData.supplierName  || poData.supplier_name  || 'Supplier';
-                        amount        = poData.totalAmount   || poData.total_amount   || amount;
+                    supplierId    = poData.supplierId     || poData.supplier_id    || '';
+                }
+
+                // 3. If email still missing, fetch from suppliers collection using supplierId or supplierName
+                if (!supplierEmail && supplierId) {
+                    const suppDoc = await getDoc(doc(db, 'suppliers', supplierId));
+                    if (suppDoc.exists()) {
+                        const suppData = suppDoc.data();
+                        supplierEmail = suppData.email || suppData.supplierEmail || suppData.supplier_email || '';
+                        supplierName  = suppData.name  || suppData.supplierName  || supplierName;
+                    }
+                }
+
+                // 4. Fallback search in suppliers collection by company/supplier name
+                if (!supplierEmail) {
+                    const suppNameQuery = query(collection(db, 'suppliers'), where('name', '==', supplierName));
+                    const suppNameSnap = await getDocs(suppNameQuery);
+                    if (!suppNameSnap.empty) {
+                        const suppData = suppNameSnap.docs[0].data();
+                        supplierEmail = suppData.email || suppData.supplierEmail || '';
                     }
                 }
 
                 if (!supplierEmail) {
-                    console.error('🔴 Supplier email not found in purchaseOrders collection!');
+                    console.error('🔴 Supplier email could not be resolved from purchaseOrders or suppliers collections.');
                     return;
                 }
 
-                // 3. Send payment email
+                // 5. Send Email
                 sendPaymentEmailToSupplier(supplierEmail, supplierName, amount, orderId);
 
-                // Clean URL parameters
+                // Clean URL params
                 window.history.replaceState({}, document.title, window.location.pathname + '#delivery-logs');
             } else {
                 console.error('🔴 No matching delivery document found for order_id:', orderId);
