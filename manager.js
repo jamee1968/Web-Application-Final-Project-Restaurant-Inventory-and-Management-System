@@ -1620,17 +1620,27 @@ async function handlePostPaymentEmail() {
         try {
             console.log('🟡 Processing post-payment notification for:', orderId);
             
-            // 1. Fetch delivery record
+            // 1. Fetch all delivery documents matching order_id to calculate total
             const q = query(collection(db, 'deliveries'), where('order_id', '==', orderId));
             const querySnapshot = await getDocs(q);
             
             if (!querySnapshot.empty) {
-                const deliveryData = querySnapshot.docs[0].data();
-                const poRefId = deliveryData.po_ref_id || orderId;
+                let totalAmount = 0;
+                let deliveryData = {};
+
+                querySnapshot.docs.forEach(docSnap => {
+                    const d = docSnap.data();
+                    deliveryData = d;
+                    // Calculate item total: price * ordered_quantity or add item total_price
+                    const itemPrice = parseFloat(d.price || d.unit_price || 0);
+                    const qty = parseFloat(d.ordered_quantity || d.delivered_quantity || 1);
+                    const itemTotal = d.total_price || d.amount || (itemPrice * qty);
+                    
+                    totalAmount += parseFloat(itemTotal || 0);
+                });
 
                 let supplierEmail = '';
                 let supplierName = 'Supplier';
-                let amount = deliveryData.total_price || deliveryData.amount || 0;
                 let supplierId = '';
 
                 // 2. Query purchaseOrders collection
@@ -1641,21 +1651,22 @@ async function handlePostPaymentEmail() {
                     const poData = poSnap.docs[0].data();
                     supplierEmail = poData.supplierEmail || poData.supplier_email || poData.email || '';
                     supplierName  = poData.supplierName  || poData.supplier_name  || 'Supplier';
-                    amount        = poData.totalAmount   || poData.total_amount   || amount;
                     supplierId    = poData.supplierId     || poData.supplier_id    || '';
+                    if (poData.totalAmount || poData.total_amount) {
+                        totalAmount = parseFloat(poData.totalAmount || poData.total_amount);
+                    }
                 }
 
-                // 3. If email still missing, fetch from suppliers collection using supplierId or supplierName
+                // 3. Fallback search in suppliers collection if email is missing
                 if (!supplierEmail && supplierId) {
                     const suppDoc = await getDoc(doc(db, 'suppliers', supplierId));
                     if (suppDoc.exists()) {
                         const suppData = suppDoc.data();
-                        supplierEmail = suppData.email || suppData.supplierEmail || suppData.supplier_email || '';
+                        supplierEmail = suppData.email || suppData.supplierEmail || '';
                         supplierName  = suppData.name  || suppData.supplierName  || supplierName;
                     }
                 }
 
-                // 4. Fallback search in suppliers collection by company/supplier name
                 if (!supplierEmail) {
                     const suppNameQuery = query(collection(db, 'suppliers'), where('name', '==', supplierName));
                     const suppNameSnap = await getDocs(suppNameQuery);
@@ -1666,14 +1677,17 @@ async function handlePostPaymentEmail() {
                 }
 
                 if (!supplierEmail) {
-                    console.error('🔴 Supplier email could not be resolved from purchaseOrders or suppliers collections.');
+                    console.error('🔴 Supplier email could not be resolved.');
                     return;
                 }
 
-                // 5. Send Email
-                sendPaymentEmailToSupplier(supplierEmail, supplierName, amount, orderId);
+                // Format amount clearly as Tk
+                const formattedAmount = `${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} Tk`;
 
-                // Clean URL params
+                // 4. Send Email
+                sendPaymentEmailToSupplier(supplierEmail, supplierName, formattedAmount, orderId);
+
+                // Clean URL parameters
                 window.history.replaceState({}, document.title, window.location.pathname + '#delivery-logs');
             } else {
                 console.error('🔴 No matching delivery document found for order_id:', orderId);
