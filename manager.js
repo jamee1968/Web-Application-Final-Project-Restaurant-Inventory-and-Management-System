@@ -5,7 +5,7 @@
 
 import {
     collection, doc, getDocs, setDoc,
-    onSnapshot,
+    onSnapshot, getDoc,
     updateDoc, addDoc, increment, deleteDoc,
     query, orderBy, limit, where,
     serverTimestamp
