@@ -681,12 +681,14 @@ async function saveSupplierModal() {
 }
 
 function showCredentialsScreen(name, email, password, phone) {
+    const loginLink = `${window.location.origin}/index.html`;
     const box = document.getElementById('supplierModal').querySelector('.modal-box');
     const credentialsText =
-`Login Email: ${email}
+`Login Portal: ${loginLink}
+Login Email: ${email}
 Password: ${password}
 
-Please use this email and password to log in for the first time. For your security, we recommend resetting your password immediately after logging in.`;
+Please use this link, email, and password to log in for the first time. For your security, we recommend resetting your password immediately after logging in.`;
 
     box.innerHTML = `
         <h3 style="margin-bottom: 1rem; color: var(--color-success);">
@@ -697,7 +699,7 @@ Please use this email and password to log in for the first time. For your securi
         </p>
 
         <div class="form-group">
-            <textarea id="supplier-credentials-text" class="form-control" rows="6" readonly
+            <textarea id="supplier-credentials-text" class="form-control" rows="7" readonly
                       style="font-family: monospace; resize: none;">${credentialsText}</textarea>
         </div>
 
@@ -735,12 +737,14 @@ function copySupplierCredentials() {
 }
 
 function emailSupplierCredentials(email, name, password) {
+    const loginLink = `${window.location.origin}/index.html`;
     const subject = encodeURIComponent('Your Restaurant IMS Supplier Portal Login');
     const body = encodeURIComponent(
 `Hello ${name},
 
 You've been added as a supplier on our Restaurant Inventory Management System.
 
+Login Link: ${loginLink}
 Login Email: ${email}
 Temporary Password: ${password}
 
@@ -749,18 +753,18 @@ Please log in and change your password as soon as possible for security.
 Thank you.`
     );
 
-    // Opens Gmail's compose window directly in the browser — reliable, no OS app-picker needed
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${subject}&body=${body}`;
     window.open(gmailUrl, '_blank');
 }
 
 function whatsappSupplierCredentials(phone, name, email, password) {
-    // Strip the "+" for wa.me format — it expects just digits with country code
+    const loginLink = `${window.location.origin}/index.html`;
     const cleanPhone = phone.replace(/\D/g, '');
 
     const message = encodeURIComponent(
 `Hello ${name}, you've been added as a supplier on our Restaurant Inventory Management System.
 
+Login Link: ${loginLink}
 Login Email: ${email}
 Temporary Password: ${password}
 
