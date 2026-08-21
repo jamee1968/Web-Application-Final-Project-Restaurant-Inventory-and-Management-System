@@ -1611,33 +1611,34 @@ window.addEventListener('DOMContentLoaded', () => {
 // Add this helper function at the top or bottom of manager.js
 async function handlePostPaymentEmail() {
     const urlParams = new URLSearchParams(window.location.search);
-    const tranId = urlParams.get('tran_id') || urlParams.get('order_id');
-    const paymentStatus = urlParams.get('status') || urlParams.get('payment');
+    const orderId = urlParams.get('tran_id') || urlParams.get('order_id');
 
-    // Only run if we just returned from a successful payment redirect
-    if (window.location.hash === '#delivery-logs' && tranId) {
+    if (window.location.hash === '#delivery-logs' && orderId) {
         try {
-            console.log('🟡 Processing post-payment notification for:', tranId);
+            console.log('🟡 Processing post-payment notification for:', orderId);
             
-            // Fetch order details directly from Firestore
-            const orderDoc = await getDoc(doc(db, 'purchase_orders', tranId));
+            // Query the deliveries collection where order_id matches
+            const q = query(collection(db, 'deliveries'), where('order_id', '==', orderId));
+            const querySnapshot = await getDocs(q);
             
-            if (orderDoc.exists()) {
-                const data = orderDoc.data();
+            if (!querySnapshot.empty) {
+                const data = querySnapshot.docs[0].data();
                 
-                // Trigger EmailJS
+                // Trigger EmailJS notification
                 sendPaymentEmailToSupplier(
-                    data.supplierEmail,
-                    data.supplierName || 'Supplier',
-                    data.totalAmount || data.price,
-                    tranId
+                    data.supplierEmail || data.supplier_email,
+                    data.supplierName || data.supplier_name || 'Supplier',
+                    data.totalAmount || data.price || data.amount,
+                    orderId
                 );
 
                 // Clean URL parameters so email isn't re-sent on page refresh
                 window.history.replaceState({}, document.title, window.location.pathname + '#delivery-logs');
+            } else {
+                console.error('🔴 No matching delivery document found for order_id:', orderId);
             }
         } catch (err) {
-            console.error('🔴 Error fetching order for payment email:', err);
+            console.error('🔴 Error fetching delivery for payment email:', err);
         }
     }
 }
