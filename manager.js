@@ -774,6 +774,22 @@ Please log in and change your password as soon as possible for security.`
 }
 
 //-------------------------------------------------------------
+function sendPaymentEmailToSupplier(supplierEmail, supplierName, amount, orderId) {
+    const templateParams = {
+        to_email: supplierEmail,
+        to_name: supplierName,
+        order_id: orderId,
+        amount: amount,
+        payment_status: 'Paid'
+    };
+
+    emailjs.send('service_qyshhhs', 'template_jlw1fyv', templateParams)
+        .then((response) => {
+            console.log('🟢 Payment email sent via EmailJS!', response.status);
+        }, (error) => {
+            console.error('🔴 EmailJS failed:', error);
+        });
+}
 //payment functions
 //-------------------------------------------------------------
 let paymentContext = null;
