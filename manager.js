@@ -776,17 +776,20 @@ Please log in and change your password as soon as possible for security.`
 //-------------------------------------------------------------
 function sendPaymentEmailToSupplier(supplierEmail, supplierName, amount, orderId) {
     const templateParams = {
-        to_email: supplierEmail,
-        to_name: supplierName,
-        order_id: orderId,
-        amount: amount,
+        to_email: supplierEmail || 'fallback@example.com',
+        to_name: supplierName || 'Valued Supplier',
+        order_id: orderId || 'N/A',
+        amount: amount || 0,
         payment_status: 'Paid'
     };
 
+    console.log('🟡 Sending EmailJS params:', templateParams);
+
     emailjs.send('service_qyshhhs', 'template_jlw1fyv', templateParams)
         .then((response) => {
-            console.log('🟢 Payment email sent via EmailJS!', response.status);
-        }, (error) => {
+            console.log('🟢 Payment email sent via EmailJS!', response.status, response.text);
+        })
+        .catch((error) => {
             console.error('🔴 EmailJS failed:', error);
         });
 }
@@ -1617,28 +1620,53 @@ async function handlePostPaymentEmail() {
         try {
             console.log('🟡 Processing post-payment notification for:', orderId);
             
-            // Query the deliveries collection where order_id matches
+            // 1. Find delivery document
             const q = query(collection(db, 'deliveries'), where('order_id', '==', orderId));
             const querySnapshot = await getDocs(q);
             
             if (!querySnapshot.empty) {
-                const data = querySnapshot.docs[0].data();
-                
-                // Trigger EmailJS notification
-                sendPaymentEmailToSupplier(
-                    data.supplierEmail || data.supplier_email,
-                    data.supplierName || data.supplier_name || 'Supplier',
-                    data.totalAmount || data.price || data.amount,
-                    orderId
-                );
+                const deliveryData = querySnapshot.docs[0].data();
+                const poRefId = deliveryData.po_ref_id || orderId;
 
-                // Clean URL parameters so email isn't re-sent on page refresh
+                // 2. Fetch order details from purchaseOrders collection
+                let supplierEmail = '';
+                let supplierName = 'Supplier';
+                let amount = deliveryData.total_price || deliveryData.amount || 0;
+
+                const poDoc = await getDoc(doc(db, 'purchaseOrders', poRefId));
+                
+                if (poDoc.exists()) {
+                    const poData = poDoc.data();
+                    supplierEmail = poData.supplierEmail || poData.supplier_email || poData.email || '';
+                    supplierName  = poData.supplierName  || poData.supplier_name  || 'Supplier';
+                    amount        = poData.totalAmount   || poData.total_amount   || amount;
+                } else {
+                    console.warn('⚠️ PO doc not found directly by ID, trying query...');
+                    const poQuery = query(collection(db, 'purchaseOrders'), where('order_id', '==', orderId));
+                    const poSnap = await getDocs(poQuery);
+                    if (!poSnap.empty) {
+                        const poData = poSnap.docs[0].data();
+                        supplierEmail = poData.supplierEmail || poData.supplier_email || poData.email || '';
+                        supplierName  = poData.supplierName  || poData.supplier_name  || 'Supplier';
+                        amount        = poData.totalAmount   || poData.total_amount   || amount;
+                    }
+                }
+
+                if (!supplierEmail) {
+                    console.error('🔴 Supplier email not found in purchaseOrders collection!');
+                    return;
+                }
+
+                // 3. Send payment email
+                sendPaymentEmailToSupplier(supplierEmail, supplierName, amount, orderId);
+
+                // Clean URL parameters
                 window.history.replaceState({}, document.title, window.location.pathname + '#delivery-logs');
             } else {
                 console.error('🔴 No matching delivery document found for order_id:', orderId);
             }
         } catch (err) {
-            console.error('🔴 Error fetching delivery for payment email:', err);
+            console.error('🔴 Error fetching order details for payment email:', err);
         }
     }
 }
