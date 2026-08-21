@@ -1560,16 +1560,13 @@ function initDashboard() {
         return;
     }
 
-    // CHECK AUTHENTICATION AND SWITCH TAB ON PAYMENT REDIRECT
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
         if (!user) {
-            // If user lost session/token, send to login
             window.location.href = 'index.html';
             return;
         }
 
-        // Switch to delivery logs tab if returning from payment
         if (window.location.hash === '#delivery-logs') {
             const deliveryTabBtn = document.querySelector('[data-section="delivery-logs"]') 
                                 || document.getElementById('delivery-logs-tab')
@@ -1577,6 +1574,9 @@ function initDashboard() {
             if (deliveryTabBtn) {
                 deliveryTabBtn.click();
             }
+
+            // Check and send payment confirmation email on return
+            handlePostPaymentEmail();
         }
     });
 
@@ -1586,7 +1586,6 @@ function initDashboard() {
     listenPurchaseOrders();
     listenDeliveries();
     listenActivities();
-    console.log('🟢 All listen...() calls completed.');
 }
 
 if (document.readyState === 'loading') {
@@ -1608,3 +1607,37 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// Add this helper function at the top or bottom of manager.js
+async function handlePostPaymentEmail() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tranId = urlParams.get('tran_id') || urlParams.get('order_id');
+    const paymentStatus = urlParams.get('status') || urlParams.get('payment');
+
+    // Only run if we just returned from a successful payment redirect
+    if (window.location.hash === '#delivery-logs' && tranId) {
+        try {
+            console.log('🟡 Processing post-payment notification for:', tranId);
+            
+            // Fetch order details directly from Firestore
+            const orderDoc = await getDoc(doc(db, 'purchase_orders', tranId));
+            
+            if (orderDoc.exists()) {
+                const data = orderDoc.data();
+                
+                // Trigger EmailJS
+                sendPaymentEmailToSupplier(
+                    data.supplierEmail,
+                    data.supplierName || 'Supplier',
+                    data.totalAmount || data.price,
+                    tranId
+                );
+
+                // Clean URL parameters so email isn't re-sent on page refresh
+                window.history.replaceState({}, document.title, window.location.pathname + '#delivery-logs');
+            }
+        } catch (err) {
+            console.error('🔴 Error fetching order for payment email:', err);
+        }
+    }
+}
