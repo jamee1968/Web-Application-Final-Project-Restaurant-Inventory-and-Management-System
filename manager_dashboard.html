@@ -13,6 +13,19 @@
       emailjs.init("fdO0MM1dm2ijW__kd");
    })();
 </script>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        
+        if (sidebar && mainContent) {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+    }
+    // Explicitly attach to window
+    window.toggleSidebar = toggleSidebar;
+</script>
 
 
 </head>
@@ -67,12 +80,19 @@
     <div class="main-content">
 
         <!-- Top Bar -->
-        <div class="top-bar">
-            <h2 id="viewHeading">Dashboard Overview</h2>
-            <button class="btn btn-outline btn-sm" onclick="handleManagerLogout()" title="Log out">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
+        <!-- Top Bar -->
+<div class="top-bar" style="display: flex; align-items: center; gap: 15px;">
+    <!-- 3-Line Toggle Button -->
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Left Panel">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <h2 id="viewHeading" style="margin: 0;">Dashboard Overview</h2>
+    
+    <button class="btn btn-outline btn-sm" style="margin-left: auto;" onclick="handleManagerLogout()" title="Log out">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+</div>
 
         <!-- ══ PANEL 1: DASHBOARD ══ -->
         <div id="dashboardPanel" class="workspace active-view">

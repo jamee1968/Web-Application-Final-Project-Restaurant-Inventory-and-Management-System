@@ -212,11 +212,23 @@
 }
 
         .table-container {
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            margin-top: 1rem;
-        }
+    border-radius: var(--border-radius);
+    border: 1px solid #e2e8f0;
+    margin-top: 1rem;
+    max-height: calc(116vh - 300px); 
+    overflow-y: auto;
+    position: relative;
+}
+/* 2. Stick column header row to top during scroll */
+.table-container th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa; 
+    z-index: 2;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
+}
+
+
 
         table {
             width: 100%;
@@ -425,4 +437,128 @@ header {
 .workspace,
 #dashView {
     padding-top: 5px !important;
+}
+
+/* Lock viewable viewport to screen bounds */
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Sidebar styling - Fixed left panel */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: var(--sidebar-bg);
+    color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+/* Main Area Layout */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Top bar - Fixed header */
+.top-bar {
+    height: 70px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    flex-shrink: 0;
+}
+
+/* Workspace Panels Container - Scrollable internal area */
+.workspace {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    display: none;
+}
+
+.workspace.active-view {
+    display: block;
+}
+
+/* PO Search Filter Bar styling for Supplier Payments */
+.po-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--border-radius);
+    padding: 6px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.po-filter-bar input {
+    border: none;
+    outline: none;
+    font-size: 0.88rem;
+    color: var(--text-main);
+    width: 200px;
+}
+
+.po-filter-bar i {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+/* Sidebar & Main Content Smooth Transitions */
+.sidebar {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.main-content {
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hamburger Toggle Button Styling */
+.sidebar-toggle-btn {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+/* Collapsed Sidebar Rules */
+.sidebar.collapsed {
+    width: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Expanded Canvas Area */
+.main-content.expanded {
+    margin-left: 0 !important;
+    width: 100% !important;
 }

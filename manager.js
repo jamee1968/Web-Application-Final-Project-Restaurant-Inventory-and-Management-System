@@ -276,8 +276,20 @@ for (const [id, item] of entries) {
             : `Purchase Order ${orderId} submitted! (Email notification failed — check with the supplier directly, or verify EmailJS setup.)`
         );
 
+        // 1. Reset the selected PO state and re-render the table
         Object.keys(_selectedPOItems).forEach(k => delete _selectedPOItems[k]);
         renderPOItemsTable(window._ingredientCache || []);
+
+        // 2. Reset the Target Supplier dropdown to the default placeholder
+        if (supplierSelect) {
+            supplierSelect.value = '';
+        }
+
+        // 3. Clear the search field if filled
+        const searchInput = document.getElementById('po-ingredient-search');
+        if (searchInput) {
+            searchInput.value = '';
+        }
 
     } catch (err) {
         console.error('PO submission error:', err);
@@ -684,7 +696,7 @@ function showCredentialsScreen(name, email, password, phone) {
     const loginLink = `${window.location.origin}/index.html`;
     const box = document.getElementById('supplierModal').querySelector('.modal-box');
     const credentialsText =
-`Login Portal: ${loginLink}
+`Login Portal: https://restaurant-supplier-inventory.netlify.app/
 Login Email: ${email}
 Password: ${password}
 
@@ -744,7 +756,7 @@ function emailSupplierCredentials(email, name, password) {
 
 You've been added as a supplier on our Restaurant Inventory Management System.
 
-Login Link: ${loginLink}
+Login Link: https://restaurant-supplier-inventory.netlify.app/
 Login Email: ${email}
 Temporary Password: ${password}
 
@@ -764,7 +776,7 @@ function whatsappSupplierCredentials(phone, name, email, password) {
     const message = encodeURIComponent(
 `Hello ${name}, you've been added as a supplier on our Restaurant Inventory Management System.
 
-Login Link: ${loginLink}
+Login Link: https://restaurant-supplier-inventory.netlify.app/
 Login Email: ${email}
 Temporary Password: ${password}
 

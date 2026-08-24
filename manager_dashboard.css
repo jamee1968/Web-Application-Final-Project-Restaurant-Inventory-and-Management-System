@@ -91,15 +91,22 @@ body {
     font-size: 0.9rem;
     color: #cbd5e1;
 }
-
+.dashboard-container {
+    display: flex;
+    width: 100%;
+}
 /* ── Main Content ── */
 .main-content {
+    
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
     height: 100vh;
     overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    flex-grow: 1;
+    width: 100%;
 }
 
 .top-bar {
@@ -307,6 +314,11 @@ table {
     text-align: left;
 }
 
+/* Add to your CSS stylesheet */
+#po-items-table-body {
+    max-height: 250px;
+    overflow-y: auto;
+}
 th, td {
     padding: 8px 16px; /* Reduced vertical padding (thinner rows) */
     border-bottom: 1px solid #cbd5e1; /* Darker row divider lines */
@@ -772,4 +784,64 @@ tbody tr:hover {
     font-size: 0.93rem;
     font-weight: 700;
     color: var(--color-primary);
+}
+
+/* Sidebar & Main Area Transitions */
+.sidebar {
+    transition: all 0.3s ease-in-out;
+}
+
+
+
+/* 3-Line Toggle Button Style */
+.sidebar-toggle-btn {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+
+
+----------------------
+/* Ensure body layout supports side-by-side positioning */
+body {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar transition & collapsed state */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.sidebar.collapsed {
+    margin-left: -260px; /* Slides the sidebar off-screen */
+}
+
+/* Main content adjusts smoothly when sidebar collapses */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    transition: all 0.3s ease-in-out;
+}
+
+.main-content.expanded {
+    width: 100%;
 }

@@ -39,11 +39,18 @@
 
     <!-- Main Working Panels Area Container -->
     <div class="main-content">
-        <div class="top-bar">
-            <h2 id="viewHeaderTitle">Dashboard Overview</h2>
-            
-            <button class="btn btn-outline btn-sm" onclick="handleOwnerLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+    <div class="top-bar" style="display: flex; align-items: center; gap: 15px;">
+        <!-- 3-Line Hamburger Toggle Button -->
+        <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <h2 id="viewHeaderTitle" style="margin: 0;">Dashboard Overview</h2>
+        
+        <button class="btn btn-outline btn-sm" style="margin-left: auto;" onclick="handleOwnerLogout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
 
         <!-- PANEL 1: GENERAL EXECUTIVE MACRO DASHBOARD -->
         <div id="dashView" class="workspace active-view">
@@ -188,30 +195,48 @@
 </div>
 
         <!-- PANEL 2: SUPPLIER LIABILITY PAYMENTS LEDGER -->
-        <div id="paymentsView" class="workspace">
-            <div style="margin-bottom: 1.5rem;">
-                <h3>Supplier Ledger Accounts & Open Invoices</h3>
-                <p style="color:#64748b; font-size: 0.9rem;">Review outstanding balances received for checked-in supplier fulfillment manifests.</p>
-            </div>
+<div id="paymentsView" class="workspace">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+        <div>
+            <h3>Supplier Ledger Accounts & Open Invoices</h3>
+            <p style="color:#64748b; font-size: 0.9rem;">Review outstanding balances received for checked-in supplier fulfillment manifests.</p>
+        </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Invoice Ref</th>
-                            <th>Supplier Enterprise</th>
-                            <th>Fulfillment Date</th>
-                            <th>Total Owed Balance</th>
-                            <th>Status Flag</th>
-                            <th style="text-align: right;">Action Ledger</th>
-                        </tr>
-                    </thead>
-                    <tbody id="payments-tbody">
-    <tr><td colspan="6">Loading invoices...</td></tr>
-</tbody>
-                </table>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            
+
+            <!-- Dashboard Styled Date Range Filter -->
+            <div class="kpi-filter-container">
+                <i class="fas fa-filter"></i>
+                <select id="paymentDateFilter" onchange="filterSupplierPayments()">
+                    <option value="all" selected>All Time</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="prevMonth">Previous Month</option>
+                    <option value="30days">Last 30 Days</option>
+                    <option value="thisYear">This Year</option>
+                </select>
             </div>
         </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice Ref</th>
+                    <th>Supplier Enterprise</th>
+                    <th>Fulfillment Date</th>
+                    <th>Total Owed Balance</th>
+                    <th>Status Flag</th>
+                    <th style="text-align: right;">Action Ledger</th>
+                </tr>
+            </thead>
+            <tbody id="payments-tbody">
+                <tr><td colspan="6">Loading invoices...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
         <!-- PANEL 3: EXECUTIVE REPORTS & ANALYTICS WIDGETS -->
 <!-- PANEL 3: EXECUTIVE REPORTS & ANALYTICS WIDGETS -->

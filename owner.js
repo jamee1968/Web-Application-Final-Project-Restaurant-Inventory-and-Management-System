@@ -905,3 +905,65 @@ window.exportSupplierDataCSV = function() {
     link.click();
     document.body.removeChild(link);
 };
+
+window.filterSupplierPayments = function() {
+    const filterRange = document.getElementById('paymentDateFilter').value;
+    const rows = document.querySelectorAll('#payments-tbody tr');
+    
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    rows.forEach(row => {
+        // Skip empty placeholder or header rows
+        if (row.cells.length < 6) return;
+
+        // Extract date string from 3rd column ("Fulfillment Date")
+        const dateStr = (row.cells[2].textContent || row.cells[2].innerText).trim();
+        let showRow = true;
+
+        if (dateStr && filterRange !== 'all') {
+            const rowDate = new Date(dateStr);
+            if (!isNaN(rowDate.getTime())) {
+                const rowYear = rowDate.getFullYear();
+                const rowMonth = rowDate.getMonth();
+                const timeDiffDays = (now - rowDate) / (1000 * 3600 * 24);
+
+                switch (filterRange) {
+                    case 'thisMonth':
+                        showRow = (rowYear === currentYear && rowMonth === currentMonth);
+                        break;
+                    case 'prevMonth':
+                        const targetMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+                        const targetYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+                        showRow = (rowYear === targetYear && rowMonth === targetMonth);
+                        break;
+                    case '30days':
+                        showRow = (timeDiffDays >= 0 && timeDiffDays <= 30);
+                        break;
+                    case 'thisYear':
+                        showRow = (rowYear === currentYear);
+                        break;
+                }
+            }
+        }
+
+        // Toggle row visibility
+        row.style.display = showRow ? '' : 'none';
+    });
+};
+
+window.toggleSidebar = function() {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('expanded');
+
+    // Trigger chart resize recalculation if canvas is present
+    setTimeout(() => {
+        if (typeof renderAnalyticsChart === 'function' && window._aiDeliveriesCache) {
+            renderAnalyticsChart();
+        }
+    }, 200);
+};
